@@ -12,12 +12,15 @@
 - To connect to S3, use the credentials provided in the email with this task
 - S3 is not a filesystem, but you can treat prefixes in object names as directories.
   - You can assume that all objects are text files.
-  - An object name of the form prefix/subprefix/object.txt can be interpreted as an absolute path to the file name object.txt.
+  - An object name of the form **prefix/subprefix/object.txt** can be interpreted as an absolute path to the file name **object.txt**.
   - Note that there is no concept like an empty directory in s3, and part of the task is to devise a way of handling that.
   - To represent the structure given below, you will need those three objects:
-    - object1.txt
-    - prefix/object2.txt
-    - prefix/subprefix/object3.txt
+    - **object1.txt**
+    - **prefix/object2.txt**
+    - **prefix/subprefix/object3.txt**
+
+![image](https://github.com/PetarMetodiev/s3-file-browser/assets/6378306/15681340-1da8-41b8-b897-2475bffa3ca0)
+
 - You should know that the S3 API allows for such operation on a bucket:
   - List all objects in a bucket.
   - List objects in a bucket starting with some prefix.
