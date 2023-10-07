@@ -1,0 +1,20 @@
+.btn {
+  background-color: blueviolet;
+  color: white;
+
+  border: none;
+  border-radius: 0.3em;
+
+  font-size: 1.3rem;
+
+  padding: 0.5em 1.5em;
+
+  cursor: pointer;
+
+  transition: background-color 100ms ease-in;
+
+  &:hover,
+  &:focus {
+    background-color: blue;
+  }
+}
