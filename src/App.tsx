@@ -69,6 +69,8 @@ function App() {
   const [bucket, setBucket] = useState("");
 
   const handleUpload = () => {
+    setObjKey("");
+    setObjContent("");
     return uploadObject({ content: objContent, key: objKey })
       .then((res) => console.log("success:", res))
       .catch((e) => console.log(e));
@@ -97,10 +99,6 @@ function App() {
   };
 
   const submitCredentials = () => {
-    console.log("bucket", bucket);
-    console.log("region", region);
-    console.log("accessKeyId", accessKeyId);
-    console.log("secretAccessKey", secretAccessKey);
     localStorage.setItem("bucket", bucket);
     localStorage.setItem("region", region);
     localStorage.setItem("accessKeyId", accessKeyId);
@@ -160,7 +158,17 @@ function App() {
       <div>
         <h2>Get all objects</h2>
         <button onClick={handleGetAllObjects}>Get all objects data</button>
-        <pre>{JSON.stringify(s3data, null, 2)}</pre>
+        {s3data?.map((data) => {
+          return (
+            <div key={`${data.ETag}-${data.Key}-${data.LastModified}`}>
+              <h3>File name: {data.Key}</h3>
+              <span className="block">
+                Last modified: {data.LastModified?.toLocaleString().toString()}
+              </span>
+              <span className="block">Size: {data.Size} bytes</span>
+            </div>
+          );
+        })}
       </div>
     </>
   );

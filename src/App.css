@@ -5,3 +5,7 @@ label {
 label + label {
   margin-block-start: 1rem;
 }
+
+.block {
+  display: block;
+}
