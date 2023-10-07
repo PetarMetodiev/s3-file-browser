@@ -11,6 +11,7 @@ import {
   S3Client,
   _Object,
 } from "@aws-sdk/client-s3";
+import { CredentialsForm } from "./components/CredentialsForm";
 
 const Bucket = localStorage.getItem("bucket") || "";
 
@@ -107,6 +108,7 @@ function App() {
 
   return (
     <>
+      <CredentialsForm />
       <div>
         <h1>Enter credentials:</h1>
         <label>
