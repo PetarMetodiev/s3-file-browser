@@ -2,6 +2,8 @@ import { useState } from "react";
 import "./App.css";
 
 import {
+  DeleteObjectCommand,
+  DeleteObjectCommandInput,
   GetObjectCommand,
   GetObjectCommandInput,
   ListObjectsV2Command,
@@ -59,6 +61,16 @@ const getObject = (key: string) => {
   return client.send(command).then((r) => r.Body.transformToString());
 };
 
+const deleteObject = (objKey: string) => {
+  const input: DeleteObjectCommandInput = {
+    Bucket,
+    Key: objKey,
+  };
+
+  const command = new DeleteObjectCommand(input);
+  return client.send(command).then(console.log);
+};
+
 function App() {
   const [s3data, setS3Data] = useState<_Object[]>();
   const [objData, setObjData] = useState();
@@ -99,6 +111,10 @@ function App() {
       .catch((e) => console.log(e));
   };
 
+  const handleDeleteObject = (objKey: string) => {
+    return deleteObject(objKey);
+  };
+
   const submitCredentials = () => {
     localStorage.setItem("bucket", bucket);
     localStorage.setItem("region", region);
@@ -113,20 +129,33 @@ function App() {
         <h1>Enter credentials:</h1>
         <label>
           Bucket:
-          <input type="text" onChange={(e) => setBucket(e.target.value)} />
+          <input
+            type="text"
+            value={bucket}
+            onChange={(e) => setBucket(e.target.value)}
+          />
         </label>
         <label>
           Region:
-          <input type="text" onChange={(e) => setRegion(e.target.value)} />
+          <input
+            type="text"
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+          />
         </label>
         <label>
           Access Key Id:
-          <input type="text" onChange={(e) => setAccessKeyId(e.target.value)} />
+          <input
+            type="text"
+            value={accessKeyId}
+            onChange={(e) => setAccessKeyId(e.target.value)}
+          />
         </label>
         <label>
           Secret Access Key:
           <input
             type="text"
+            value={secretAccessKey}
             onChange={(e) => setSecretAccessKey(e.target.value)}
           />
         </label>
@@ -136,11 +165,18 @@ function App() {
         <h2>Upload object</h2>
         <label>
           File name:
-          <input type="text" onChange={(e) => setObjKey(e.target.value)} />
+          <input
+            type="text"
+            value={objKey}
+            onChange={(e) => setObjKey(e.target.value)}
+          />
         </label>
         <label>
           File contents name:
-          <textarea onChange={(e) => setObjContent(e.target.value)} />
+          <textarea
+            value={objContent}
+            onChange={(e) => setObjContent(e.target.value)}
+          />
         </label>
         <hr />
         {objKey} / {objContent}
@@ -164,10 +200,19 @@ function App() {
           return (
             <div key={`${data.ETag}-${data.Key}-${data.LastModified}`}>
               <h3>File name: {data.Key}</h3>
-              <span className="block">
+              <span>
                 Last modified: {data.LastModified?.toLocaleString().toString()}
               </span>
-              <span className="block">Size: {data.Size} bytes</span>
+              <span>Size: {data.Size} bytes</span>
+              <div>
+                <button
+                  onClick={() =>
+                    handleDeleteObject(data.Key).then(handleGetAllObjects)
+                  }
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           );
         })}
