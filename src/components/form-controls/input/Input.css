@@ -7,19 +7,19 @@
   }
 
   &:focus-within {
-    background-color: #e3e3e3;
+    background-color: var(--secondary);
   }
 
   &:hover [data-input],
   &:focus-within [data-input] {
-    border-bottom-color: black;
+    border-bottom-color: var(--primary);
   }
 
   & [data-label] {
     display: block;
     font-size: 1.3em;
     margin-block-end: 0.7em;
-    color: grey;
+    color: var(--accent);
   }
 
   & [data-input] {
@@ -31,9 +31,9 @@
 
     outline: none;
     border: none;
-    border-bottom-width: 0.25em;
+    border-bottom-width: 0.15em;
     border-bottom-style: solid;
-    border-bottom-color: grey;
+    border-bottom-color: var(--accent);
     transition: border 300ms ease-in-out;
   }
 }

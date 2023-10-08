@@ -1,6 +1,6 @@
 .btn {
-  background-color: blueviolet;
-  color: white;
+  background-color: var(--primary);
+  color: var(--secondary);
 
   border: none;
   border-radius: 0.3em;
@@ -15,6 +15,6 @@
 
   &:hover,
   &:focus {
-    background-color: blue;
+    background-color: var(--accent);
   }
 }
