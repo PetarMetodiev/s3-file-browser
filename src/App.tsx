@@ -125,98 +125,98 @@ function App() {
   return (
     <>
       <CredentialsForm />
-      <div>
-        <h1>Enter credentials:</h1>
-        <label>
-          Bucket:
-          <input
-            type="text"
-            value={bucket}
-            onChange={(e) => setBucket(e.target.value)}
-          />
-        </label>
-        <label>
-          Region:
-          <input
-            type="text"
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-          />
-        </label>
-        <label>
-          Access Key Id:
-          <input
-            type="text"
-            value={accessKeyId}
-            onChange={(e) => setAccessKeyId(e.target.value)}
-          />
-        </label>
-        <label>
-          Secret Access Key:
-          <input
-            type="text"
-            value={secretAccessKey}
-            onChange={(e) => setSecretAccessKey(e.target.value)}
-          />
-        </label>
-        <button onClick={submitCredentials}>Submit</button>
-      </div>
-      <div>
-        <h2>Upload object</h2>
-        <label>
-          File name:
-          <input
-            type="text"
-            value={objKey}
-            onChange={(e) => setObjKey(e.target.value)}
-          />
-        </label>
-        <label>
-          File contents name:
-          <textarea
-            value={objContent}
-            onChange={(e) => setObjContent(e.target.value)}
-          />
-        </label>
-        <hr />
-        {objKey} / {objContent}
-        <button
-          onClick={() => {
-            handleUpload().then(handleGetAllObjects);
-          }}
-        >
-          Upload
-        </button>
-      </div>
-      <div>
-        <h2>Get Single object</h2>
-        <button onClick={handleGetObject}>Get single object data</button>
-        <pre>{objData}</pre>
-      </div>
-      <div>
-        <h2>Get all objects</h2>
-        <button onClick={handleGetAllObjects}>Get all objects data</button>
-        {s3data?.map((data) => {
-          return (
-            <div key={`${data.ETag}-${data.Key}-${data.LastModified}`}>
-              <h3>File name: {data.Key}</h3>
-              <span>
-                Last modified: {data.LastModified?.toLocaleString().toString()}
-              </span>
-              <span>Size: {data.Size} bytes</span>
-              <div>
-                <button
-                  onClick={() =>
-                    handleDeleteObject(data.Key).then(handleGetAllObjects)
-                  }
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      {/* <div> */}
+      {/*   <h1>Enter credentials:</h1> */}
+      {/*   <label> */}
+      {/*     Bucket: */}
+      {/*     <input */}
+      {/*       type="text" */}
+      {/*       value={bucket} */}
+      {/*       onChange={(e) => setBucket(e.target.value)} */}
+      {/*     /> */}
+      {/*   </label> */}
+      {/*   <label> */}
+      {/*     Region: */}
+      {/*     <input */}
+      {/*       type="text" */}
+      {/*       value={region} */}
+      {/*       onChange={(e) => setRegion(e.target.value)} */}
+      {/*     /> */}
+      {/*   </label> */}
+      {/*   <label> */}
+      {/*     Access Key Id: */}
+      {/*     <input */}
+      {/*       type="text" */}
+      {/*       value={accessKeyId} */}
+      {/*       onChange={(e) => setAccessKeyId(e.target.value)} */}
+      {/*     /> */}
+      {/*   </label> */}
+      {/*   <label> */}
+      {/*     Secret Access Key: */}
+      {/*     <input */}
+      {/*       type="text" */}
+      {/*       value={secretAccessKey} */}
+      {/*       onChange={(e) => setSecretAccessKey(e.target.value)} */}
+      {/*     /> */}
+      {/*   </label> */}
+      {/*   <button onClick={submitCredentials}>Submit</button> */}
+      {/* </div> */}
+      {/* <div> */}
+      {/*   <h2>Upload object</h2> */}
+      {/*   <label> */}
+      {/*     File name: */}
+      {/*     <input */}
+      {/*       type="text" */}
+      {/*       value={objKey} */}
+      {/*       onChange={(e) => setObjKey(e.target.value)} */}
+      {/*     /> */}
+      {/*   </label> */}
+      {/*   <label> */}
+      {/*     File contents name: */}
+      {/*     <textarea */}
+      {/*       value={objContent} */}
+      {/*       onChange={(e) => setObjContent(e.target.value)} */}
+      {/*     /> */}
+      {/*   </label> */}
+      {/*   <hr /> */}
+      {/*   {objKey} / {objContent} */}
+      {/*   <button */}
+      {/*     onClick={() => { */}
+      {/*       handleUpload().then(handleGetAllObjects); */}
+      {/*     }} */}
+      {/*   > */}
+      {/*     Upload */}
+      {/*   </button> */}
+      {/* </div> */}
+      {/* <div> */}
+      {/*   <h2>Get Single object</h2> */}
+      {/*   <button onClick={handleGetObject}>Get single object data</button> */}
+      {/*   <pre>{objData}</pre> */}
+      {/* </div> */}
+      {/* <div> */}
+      {/*   <h2>Get all objects</h2> */}
+      {/*   <button onClick={handleGetAllObjects}>Get all objects data</button> */}
+      {/*   {s3data?.map((data) => { */}
+      {/*     return ( */}
+      {/*       <div key={`${data.ETag}-${data.Key}-${data.LastModified}`}> */}
+      {/*         <h3>File name: {data.Key}</h3> */}
+      {/*         <span> */}
+      {/*           Last modified: {data.LastModified?.toLocaleString().toString()} */}
+      {/*         </span> */}
+      {/*         <span>Size: {data.Size} bytes</span> */}
+      {/*         <div> */}
+      {/*           <button */}
+      {/*             onClick={() => */}
+      {/*               handleDeleteObject(data.Key).then(handleGetAllObjects) */}
+      {/*             } */}
+      {/*           > */}
+      {/*             Delete */}
+      {/*           </button> */}
+      {/*         </div> */}
+      {/*       </div> */}
+      {/*     ); */}
+      {/*   })} */}
+      {/* </div> */}
     </>
   );
 }
