@@ -4,7 +4,18 @@ import { Button } from "./form-controls/button/Button";
 
 import "./CredentialsForm.css";
 
-export const CredentialsForm = () => {
+type Credentials = {
+  bucket: string;
+  region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+};
+
+type CredentialsFormProps = {
+  onSubmit: (e: Credentials) => void;
+};
+
+export const CredentialsForm = ({ onSubmit }: CredentialsFormProps) => {
   const [bucket, setBucket] = useState("");
   const [region, setRegion] = useState("");
   const [accessKeyId, setAccessKeyId] = useState("");
@@ -12,6 +23,12 @@ export const CredentialsForm = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    onSubmit({
+      bucket,
+      region,
+      accessKeyId,
+      secretAccessKey,
+    });
     console.log(e.target);
   };
 
@@ -32,9 +49,7 @@ export const CredentialsForm = () => {
           onChange={setSecretAccessKey}
           required
         />
-        <Button className="credentials-form__button" onClick={(e) => console.log("clicked: ", e.target)}>
-          Submit
-        </Button>
+        <Button className="credentials-form__button">Submit</Button>
       </form>
     </>
   );

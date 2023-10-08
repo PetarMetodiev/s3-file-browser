@@ -115,16 +115,17 @@ function App() {
     return deleteObject(objKey);
   };
 
-  const submitCredentials = () => {
-    localStorage.setItem("bucket", bucket);
-    localStorage.setItem("region", region);
-    localStorage.setItem("accessKeyId", accessKeyId);
-    localStorage.setItem("secretAccessKey", secretAccessKey);
+  const submitCredentials = (credentials) => {
+    console.log({ credentials });
+    // localStorage.setItem("bucket", bucket);
+    // localStorage.setItem("region", region);
+    // localStorage.setItem("accessKeyId", accessKeyId);
+    // localStorage.setItem("secretAccessKey", secretAccessKey);
   };
 
   return (
     <>
-      <CredentialsForm />
+      <CredentialsForm onSubmit={(e) => submitCredentials(e)} />
       {/* <div> */}
       {/*   <h1>Enter credentials:</h1> */}
       {/*   <label> */}
