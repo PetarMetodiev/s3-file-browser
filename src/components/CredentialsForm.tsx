@@ -2,14 +2,9 @@ import { FormEvent, useState } from "react";
 import { Input } from "./form-controls/input/Input";
 import { Button } from "./form-controls/button/Button";
 
-import "./CredentialsForm.css";
+import { Credentials } from "../contexts/S3CredentialsContextProvider";
 
-type Credentials = {
-  bucket: string;
-  region: string;
-  accessKeyId: string;
-  secretAccessKey: string;
-};
+import "./CredentialsForm.css";
 
 type CredentialsFormProps = {
   onSubmit: (e: Credentials) => void;
@@ -29,7 +24,6 @@ export const CredentialsForm = ({ onSubmit }: CredentialsFormProps) => {
       accessKeyId,
       secretAccessKey,
     });
-    console.log(e.target);
   };
 
   return (
