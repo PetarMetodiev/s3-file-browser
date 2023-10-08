@@ -2,7 +2,7 @@ import { FormEvent, useState } from "react";
 import { Input } from "./form-controls/input/Input";
 import { Button } from "./form-controls/button/Button";
 
-import { Credentials } from "../contexts/S3CredentialsContextProvider";
+import { Credentials } from "@contexts/S3CredentialsContextProvider";
 
 import "./CredentialsForm.css";
 

@@ -1,4 +1,4 @@
-import { useGeneratedId } from "../../../hooks/useGenerateId";
+import { useGeneratedId } from "@hooks/useGenerateId";
 import "./Input.css";
 
 type InputProps = {

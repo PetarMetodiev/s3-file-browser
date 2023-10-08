@@ -1,6 +1,6 @@
 import { PropsWithChildren, createContext, useState } from "react";
-import { noop } from "../utils/noop";
 import { S3Client } from "@aws-sdk/client-s3";
+import { noop } from "@utils/noop";
 
 export type Credentials = {
   bucket: string;
