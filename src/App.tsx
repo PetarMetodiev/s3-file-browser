@@ -53,14 +53,6 @@ export default App;
 
 // const Bucket = localStorage.getItem("bucket") || "";
 
-// const client = new S3Client({
-//   region: localStorage.getItem("region") || "",
-//   credentials: {
-//     accessKeyId: localStorage.getItem("accessKeyId") || "",
-//     secretAccessKey: localStorage.getItem("secretAccessKey") || "",
-//   },
-// });
-
 // type ObjectData = {
 //   key: string;
 //   content: string;

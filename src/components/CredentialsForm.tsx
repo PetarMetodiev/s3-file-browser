@@ -27,24 +27,22 @@ export const CredentialsForm = ({ onSubmit }: CredentialsFormProps) => {
   };
 
   return (
-    <>
-      <form className="credentials-form" onSubmit={handleSubmit}>
-        <Input label="Bucket" value={bucket} onChange={setBucket} required />
-        <Input label="Region" value={region} onChange={setRegion} required />
-        <Input
-          label="Access key ID"
-          value={accessKeyId}
-          onChange={setAccessKeyId}
-          required
-        />
-        <Input
-          label="Secret access key"
-          value={secretAccessKey}
-          onChange={setSecretAccessKey}
-          required
-        />
-        <Button className="credentials-form__button">Submit</Button>
-      </form>
-    </>
+    <form className="credentials-form" onSubmit={handleSubmit}>
+      <Input label="Bucket" value={bucket} onChange={setBucket} required />
+      <Input label="Region" value={region} onChange={setRegion} required />
+      <Input
+        label="Access key ID"
+        value={accessKeyId}
+        onChange={setAccessKeyId}
+        required
+      />
+      <Input
+        label="Secret access key"
+        value={secretAccessKey}
+        onChange={setSecretAccessKey}
+        required
+      />
+      <Button className="credentials-form__button">Submit</Button>
+    </form>
   );
 };

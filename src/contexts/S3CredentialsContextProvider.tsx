@@ -1,5 +1,6 @@
 import { PropsWithChildren, createContext, useState } from "react";
 import { noop } from "../utils/noop";
+import { S3Client } from "@aws-sdk/client-s3";
 
 export type Credentials = {
   bucket: string;
@@ -11,6 +12,7 @@ export type Credentials = {
 type CredentialsContextType = {
   updateCredentials: (credentials: Credentials) => void;
   isAuthenticated: boolean;
+  client: S3Client;
 };
 
 export const CredentialsContext = createContext<
@@ -18,6 +20,7 @@ export const CredentialsContext = createContext<
 >({
   updateCredentials: noop,
   isAuthenticated: false,
+  client: new S3Client({}),
   bucket: "",
   region: "",
   accessKeyId: "",
@@ -26,6 +29,7 @@ export const CredentialsContext = createContext<
 
 export const CredentialsContextProvider = ({ children }: PropsWithChildren) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [s3Client, setS3Client] = useState(new S3Client({}));
 
   const [bucket, setBucket] = useState("");
   const [region, setRegion] = useState("");
@@ -38,24 +42,31 @@ export const CredentialsContextProvider = ({ children }: PropsWithChildren) => {
     region,
     secretAccessKey,
   }: Credentials) => {
-    console.log("updating credentials: ", {
-      accessKeyId,
-      bucket,
-      region,
-      secretAccessKey,
-    });
-    setIsAuthenticated(true);
+    if (accessKeyId && bucket && region && secretAccessKey) {
+      setBucket(bucket);
+      setRegion(region);
+      setAccessKeyId(accessKeyId);
+      setSecretAccessKey(secretAccessKey);
 
-    setBucket(bucket);
-    setRegion(region);
-    setAccessKeyId(accessKeyId);
-    setSecretAccessKey(secretAccessKey);
+      setS3Client(
+        new S3Client({
+          region,
+          credentials: {
+            accessKeyId,
+            secretAccessKey,
+          },
+        })
+      );
+
+      setIsAuthenticated(true);
+    }
   };
 
   return (
     <CredentialsContext.Provider
       value={{
         isAuthenticated,
+        client: s3Client,
         bucket,
         region,
         accessKeyId,
