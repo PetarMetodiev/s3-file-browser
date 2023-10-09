@@ -3,6 +3,7 @@ import { useCallback, useContext } from "react";
 import {
   ListObjectsV2Command,
   ListObjectsV2CommandInput,
+  ListObjectsV2CommandOutput,
 } from "@aws-sdk/client-s3";
 
 import { CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
@@ -18,7 +19,11 @@ export const useGetAllObjects = () => {
   const { bucket, client } = useContext(CredentialsContext);
 
   const commandCB = useCallback(() => {
-    return client ? client.send(getAllObjects(bucket)) : Promise.resolve();
+    return client
+      ? client.send(getAllObjects(bucket))
+      : Promise.resolve<ListObjectsV2CommandOutput>({
+          $metadata: {},
+        });
   }, [bucket, client]);
 
   return commandCB;
