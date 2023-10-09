@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 
 import {
   ListObjectsV2Command,
@@ -17,5 +17,9 @@ const getAllObjects = (bucket: string) => {
 export const useGetAllObjects = () => {
   const { bucket, client } = useContext(CredentialsContext);
 
-  return () => client.send(getAllObjects(bucket));
+  const commandCB = useCallback(() => {
+    return client ? client.send(getAllObjects(bucket)) : Promise.resolve();
+  }, [bucket, client]);
+
+  return commandCB;
 };
