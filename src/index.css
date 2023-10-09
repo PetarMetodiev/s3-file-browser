@@ -26,6 +26,11 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  min-height: 100%;
+}
+
 input,
 textarea {
   font-size: inherit;
