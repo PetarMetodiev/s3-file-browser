@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
-import { Input } from "./form-controls/input/Input";
-import { Button } from "./form-controls/button/Button";
+import { Input } from "../form-controls/Input/Input";
+import { Button } from "../form-controls/Button/Button";
 
 import { Credentials } from "@contexts/S3CredentialsContextProvider";
 
@@ -8,9 +8,13 @@ import "./CredentialsForm.css";
 
 type CredentialsFormProps = {
   onSubmit: (e: Credentials) => void;
+  className?: string;
 };
 
-export const CredentialsForm = ({ onSubmit }: CredentialsFormProps) => {
+export const CredentialsForm = ({
+  onSubmit,
+  className,
+}: CredentialsFormProps) => {
   const [bucket, setBucket] = useState("");
   const [region, setRegion] = useState("");
   const [accessKeyId, setAccessKeyId] = useState("");
@@ -27,7 +31,7 @@ export const CredentialsForm = ({ onSubmit }: CredentialsFormProps) => {
   };
 
   return (
-    <form className="credentials-form" onSubmit={handleSubmit}>
+    <form className={`credentials-form ${className}`} onSubmit={handleSubmit}>
       <Input label="Bucket" value={bucket} onChange={setBucket} required />
       <Input label="Region" value={region} onChange={setRegion} required />
       <Input
