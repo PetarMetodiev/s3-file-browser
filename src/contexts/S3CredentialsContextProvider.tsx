@@ -1,4 +1,10 @@
-import { PropsWithChildren, createContext, useEffect, useState } from "react";
+import {
+  PropsWithChildren,
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { S3Client } from "@aws-sdk/client-s3";
 import { noop } from "@utils/noop";
 import {
@@ -11,13 +17,13 @@ import {
 type CredentialsContextType = {
   updateCredentials: (credentials: Credentials) => void;
   isAuthenticated: boolean;
-  client: S3Client;
+  client: S3Client | null;
 };
 
 const defaultContext = {
   updateCredentials: noop,
   isAuthenticated: false,
-  client: new S3Client({}),
+  client: null,
   bucket: localStorage.getItem(bucketLS) || "",
   region: localStorage.getItem(regionLS) || "",
   accessKeyId: localStorage.getItem(accessKeyIdLS) || "",
@@ -37,7 +43,7 @@ export const CredentialsContext = createContext<
 
 export const CredentialsContextProvider = ({ children }: PropsWithChildren) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [s3Client, setS3Client] = useState(new S3Client({}));
+  const [s3Client, setS3Client] = useState<S3Client | null>(defaultContext.client);
 
   const [bucket, setBucket] = useState(defaultContext.bucket);
   const [region, setRegion] = useState(defaultContext.region);
@@ -45,28 +51,26 @@ export const CredentialsContextProvider = ({ children }: PropsWithChildren) => {
   const [secretAccessKey, setSecretAccessKey] = useState(
     defaultContext.secretAccessKey
   );
-
-  useEffect(() => {
+  const setAuthentication = useCallback(() => {
     if (region && accessKeyId && secretAccessKey) {
       setS3Client(
-        new S3Client({
-          region,
-          credentials: {
-            accessKeyId,
-            secretAccessKey,
-          },
-        })
+        new S3Client({ region, credentials: { accessKeyId, secretAccessKey } })
       );
     }
-  }, []);
-
-  const updateCredentials = ({
-    accessKeyId,
+    setIsAuthenticated(
+      !!bucket && !!region && !!accessKeyId && !!secretAccessKey
+    );
+  }, [
     bucket,
     region,
+    accessKeyId,
     secretAccessKey,
-  }: Credentials) => {
-    if (accessKeyId && bucket && region && secretAccessKey) {
+    // setS3Client,
+    setIsAuthenticated,
+  ]);
+
+  const updateCredentials = useCallback(
+    ({ accessKeyId, bucket, region, secretAccessKey }: Credentials) => {
       setBucket(bucket);
       localStorage.setItem(bucketLS, bucket);
       setRegion(region);
@@ -76,19 +80,11 @@ export const CredentialsContextProvider = ({ children }: PropsWithChildren) => {
       setSecretAccessKey(secretAccessKey);
       localStorage.setItem(secretAccessKeyLS, secretAccessKey);
 
-      setS3Client(
-        new S3Client({
-          region,
-          credentials: {
-            accessKeyId,
-            secretAccessKey,
-          },
-        })
-      );
-
-      setIsAuthenticated(true);
-    }
-  };
+      setAuthentication();
+    },
+    [setAuthentication]
+  );
+  useEffect(() => setAuthentication(), [setAuthentication]);
 
   return (
     <CredentialsContext.Provider
