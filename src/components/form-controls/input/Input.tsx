@@ -1,5 +1,5 @@
-import { useGeneratedId } from "@hooks/useGenerateId";
 import "./Input.css";
+import { useId } from "react";
 
 type InputProps = {
   label: string;
@@ -16,7 +16,7 @@ export const Input = ({
   required,
   className,
 }: InputProps) => {
-  const id = useGeneratedId();
+  const id = useId();
 
   return (
     <div className={`input-container ${className}`}>
