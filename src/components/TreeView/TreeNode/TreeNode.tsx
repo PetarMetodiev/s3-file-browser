@@ -1,12 +1,12 @@
-import { TreeNode } from "@src/utils/convertToTreeStructure";
+import type { TreeNode as TreeNodeType } from "@src/utils/convertToTreeStructure";
 
 type NodeProps = {
-  nodeKey: TreeNode["nodeKey"];
+  nodeKey: TreeNodeType["nodeKey"];
   path: string;
-  childNodes: TreeNode["childNodes"];
+  childNodes: TreeNodeType["childNodes"];
 };
 
-export const Node = ({ nodeKey, childNodes, path }: NodeProps) => {
+export const TreeNode = ({ nodeKey, childNodes, path }: NodeProps) => {
   const isLeafNode = childNodes.includes(null);
   return (
     <div style={{ borderLeft: "2px solid", paddingLeft: "1rem" }}>
@@ -25,7 +25,7 @@ export const Node = ({ nodeKey, childNodes, path }: NodeProps) => {
           if (c !== null) {
             return (
               <>
-                <Node
+                <TreeNode
                   key={`${c.id}-${c.nodeKey}`}
                   nodeKey={c.nodeKey}
                   childNodes={c.childNodes}

@@ -1,10 +1,13 @@
 import { useGetAllObjects } from "@src/hooks/useGetAllObjects";
-import { Node } from "../TreeNode/TreeNode";
-import { TreeNode, toTree } from "@src/utils/convertToTreeStructure";
+import { TreeNode } from "../TreeNode/TreeNode";
+import {
+  TreeNode as TreeNodeType,
+  toTree,
+} from "@src/utils/convertToTreeStructure";
 import { useEffect, useState } from "react";
 
 export const TreeView = () => {
-  const [tree, setTree] = useState<TreeNode[]>([]);
+  const [tree, setTree] = useState<TreeNodeType[]>([]);
   const getAllObjects = useGetAllObjects();
 
   useEffect(() => {
@@ -28,7 +31,7 @@ export const TreeView = () => {
       tree wrapper here
       {tree.map((n) => {
         return (
-          <Node
+          <TreeNode
             path={n.nodeKey}
             key={`${n.id}-${n.nodeKey}`}
             nodeKey={n.nodeKey}
