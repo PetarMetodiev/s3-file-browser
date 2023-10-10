@@ -6,9 +6,7 @@ import {
   Credentials,
   CredentialsContext,
 } from "./contexts/S3CredentialsContextProvider";
-import { Node } from "./components/TreeView/Node/Node";
-import { useGetAllObjects } from "./hooks/useGetAllObjects";
-import { toTree } from "./utils/convertToTreeStructure";
+import { TreeWrapper } from "./components/TreeView/Wrapper/TreeWrapper";
 
 function App() {
   const { updateCredentials, isAuthenticated } = useContext(CredentialsContext);
@@ -17,23 +15,10 @@ function App() {
     updateCredentials(credentials);
   };
 
-  const getAllObjects = useGetAllObjects();
-
-  if (isAuthenticated) {
-    getAllObjects()
-      .then((r) => {
-        return (r.Contents || [null]).map((obj) => obj?.Key);
-      })
-      .then((r) => {
-        console.log(r);
-        console.log(toTree(r as string[]));
-      });
-  }
-
   return (
     <main className="main-wrapper">
       {isAuthenticated ? (
-        <Node />
+        <TreeWrapper />
       ) : (
         <CredentialsForm
           className="form-wrapper"
