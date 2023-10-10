@@ -8,7 +8,7 @@ import {
 
 import { CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
 
-const getAllObjects = (bucket: string) => {
+const makeGetAllObjectsCommand = (bucket: string) => {
   const input: ListObjectsV2CommandInput = {
     Bucket: bucket,
   };
@@ -20,7 +20,7 @@ export const useGetAllObjects = () => {
 
   const commandCB = useCallback(() => {
     return client
-      ? client.send(getAllObjects(bucket))
+      ? client.send(makeGetAllObjectsCommand(bucket))
       : Promise.resolve<ListObjectsV2CommandOutput>({
           $metadata: {},
         });
