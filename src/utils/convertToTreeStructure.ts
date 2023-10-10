@@ -2,9 +2,11 @@ const leafNode = null;
 type LeafNode = typeof leafNode;
 const isLeaf = (el: unknown): el is LeafNode => el === leafNode;
 
-type TreeNode = {
-  key: string;
-  children: (TreeNode | LeafNode)[];
+let id = 0;
+export type TreeNode = {
+  id: number;
+  nodeKey: string;
+  childNodes: (TreeNode | LeafNode)[];
 };
 
 const toTreeNode = (obj: string | LeafNode) => {
@@ -18,26 +20,31 @@ const toTreeNode = (obj: string | LeafNode) => {
 
   if (!first) {
     return {
-      key: second,
-      children: [leafNode],
+      id: id++,
+      nodeKey: second,
+      childNodes: [leafNode],
     };
   }
 
   return {
-    key: first,
-    children: [second],
+    id: id++,
+    nodeKey: first,
+    childNodes: [second],
   };
 };
 
 const toGrouped = (acc: TreeNode[], curr: TreeNode) => {
-  const existsIndex = acc.filter(Boolean).findIndex((o) => o.key === curr.key);
+  const existsIndex = acc
+    .filter(Boolean)
+    .findIndex((o) => o.nodeKey === curr.nodeKey);
 
   if (existsIndex >= 0) {
     const existing = acc[existsIndex];
 
     const updated = {
       ...existing,
-      children: [existing.children, curr.children].flat(),
+      id: id++,
+      childNodes: [existing.childNodes, curr.childNodes].flat(),
     };
 
     return [
@@ -62,10 +69,12 @@ export const toTree = (arr: string[]) => {
         if (isLeaf(obj)) {
           return obj;
         }
+
         return {
-          key: obj.key,
+          id: obj.id,
+          nodeKey: obj.nodeKey,
           // @ts-expect-error just shut up
-          children: toTree(obj.children),
+          childNodes: toTree(obj.childNodes),
         };
       })
   );
