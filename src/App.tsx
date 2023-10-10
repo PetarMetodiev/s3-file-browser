@@ -6,75 +6,9 @@ import {
   Credentials,
   CredentialsContext,
 } from "./contexts/S3CredentialsContextProvider";
-import { Node } from "./components/TreeView/Node";
+import { Node } from "./components/TreeView/Node/Node";
 import { useGetAllObjects } from "./hooks/useGetAllObjects";
-
-const leafNode = null;
-type LeafNode = typeof leafNode;
-const isLeaf = (el: unknown): el is LeafNode => el === leafNode;
-
-type TreeNode = {
-  key: string;
-  children: (TreeNode | LeafNode)[];
-};
-
-const toTreeNode = (obj: string | LeafNode) => {
-  if (isLeaf(obj)) {
-    return obj;
-  }
-
-  const index = obj.indexOf("/");
-  const first = obj.substring(0, index);
-  const second = obj.substring(index + 1, obj.length);
-
-  if (!first) {
-    return {
-      key: second,
-      children: [leafNode],
-    };
-  }
-
-  return {
-    key: first,
-    children: [second],
-  };
-};
-
-const toGrouped = (acc: TreeNode[], curr: TreeNode) => {
-  const existsIndex = acc.filter(Boolean).findIndex((o) => o.key === curr.key);
-
-  if (existsIndex >= 0) {
-    const existing = acc[existsIndex];
-
-    const updated = {
-      ...existing,
-      children: [existing.children, curr.children].flat(),
-    };
-
-    return [
-      ...acc.slice(0, existsIndex),
-      updated,
-      ...acc.slice(existsIndex + 1),
-    ];
-  }
-
-  return [...acc, curr];
-};
-
-const doWork = (arr: (string | undefined)[]) => {
-  return arr
-    .map((obj) => toTreeNode(obj!))
-    .reduce(toGrouped, [])
-    .map((obj: TreeNode | LeafNode) => {
-      if (isLeaf(obj)) {
-        return obj;
-      }
-      return {
-        key: obj.key,
-        children: doWork(obj.children),
-      };
-    });
-};
+import { toTree } from "./utils/convertToTreeStructure";
 
 function App() {
   const { updateCredentials, isAuthenticated } = useContext(CredentialsContext);
@@ -92,7 +26,7 @@ function App() {
       })
       .then((r) => {
         console.log(r);
-        console.log(doWork(r));
+        console.log(toTree(r as string[]));
       });
   }
 
