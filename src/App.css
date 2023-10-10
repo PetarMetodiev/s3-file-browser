@@ -1,0 +1,8 @@
+.main-wrapper {
+  min-height: 100%;
+  display: grid;
+
+  & .form-wrapper {
+    margin: auto;
+  }
+}

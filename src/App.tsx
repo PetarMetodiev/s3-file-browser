@@ -1,51 +1,112 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import "./App.css";
 
-// import {
-//   DeleteObjectCommand,
-//   DeleteObjectCommandInput,
-//   GetObjectCommand,
-//   GetObjectCommandInput,
-//   ListObjectsV2Command,
-//   ListObjectsV2CommandInput,
-//   PutObjectCommand,
-//   PutObjectCommandInput,
-//   S3Client,
-//   _Object,
-// } from "@aws-sdk/client-s3";
-import { CredentialsForm } from "./components/CredentialsForm";
+import { CredentialsForm } from "./components/CredentialsForm/CredentialsForm";
 import {
   Credentials,
   CredentialsContext,
-  // CredentialsContextProvider,
 } from "./contexts/S3CredentialsContextProvider";
+import { Node } from "./components/TreeView/Node";
+import { useGetAllObjects } from "./hooks/useGetAllObjects";
+
+const leafNode = null;
+type LeafNode = typeof leafNode;
+const isLeaf = (el: unknown): el is LeafNode => el === leafNode;
+
+type TreeNode = {
+  key: string;
+  children: (TreeNode | LeafNode)[];
+};
+
+const toTreeNode = (obj: string | LeafNode) => {
+  if (isLeaf(obj)) {
+    return obj;
+  }
+
+  const index = obj.indexOf("/");
+  const first = obj.substring(0, index);
+  const second = obj.substring(index + 1, obj.length);
+
+  if (!first) {
+    return {
+      key: second,
+      children: [leafNode],
+    };
+  }
+
+  return {
+    key: first,
+    children: [second],
+  };
+};
+
+const toGrouped = (acc: TreeNode[], curr: TreeNode) => {
+  const existsIndex = acc.filter(Boolean).findIndex((o) => o.key === curr.key);
+
+  if (existsIndex >= 0) {
+    const existing = acc[existsIndex];
+
+    const updated = {
+      ...existing,
+      children: [existing.children, curr.children].flat(),
+    };
+
+    return [
+      ...acc.slice(0, existsIndex),
+      updated,
+      ...acc.slice(existsIndex + 1),
+    ];
+  }
+
+  return [...acc, curr];
+};
+
+const doWork = (arr: (string | undefined)[]) => {
+  return arr
+    .map((obj) => toTreeNode(obj!))
+    .reduce(toGrouped, [])
+    .map((obj: TreeNode | LeafNode) => {
+      if (isLeaf(obj)) {
+        return obj;
+      }
+      return {
+        key: obj.key,
+        children: doWork(obj.children),
+      };
+    });
+};
 
 function App() {
-  const {
-    isAuthenticated,
-    bucket,
-    region,
-    accessKeyId,
-    secretAccessKey,
-    updateCredentials,
-  } = useContext(CredentialsContext);
+  const { updateCredentials, isAuthenticated } = useContext(CredentialsContext);
 
   const submitCredentials = (credentials: Credentials) => {
     updateCredentials(credentials);
-    // localStorage.setItem("bucket", bucket);
-    // localStorage.setItem("region", region);
-    // localStorage.setItem("accessKeyId", accessKeyId);
-    // localStorage.setItem("secretAccessKey", secretAccessKey);
   };
+
+  const getAllObjects = useGetAllObjects();
+
+  if (isAuthenticated) {
+    getAllObjects()
+      .then((r) => {
+        return (r.Contents || [null]).map((obj) => obj?.Key);
+      })
+      .then((r) => {
+        console.log(r);
+        console.log(doWork(r));
+      });
+  }
+
   return (
-    <>
-      <CredentialsForm onSubmit={(e) => submitCredentials(e)} />
-      <div>Is authenticated: {JSON.stringify(isAuthenticated)}</div>
-      <div>{bucket}</div>
-      <div>{region}</div>
-      <div>{accessKeyId}</div>
-      <div>{secretAccessKey}</div>
-    </>
+    <main className="main-wrapper">
+      {isAuthenticated ? (
+        <Node />
+      ) : (
+        <CredentialsForm
+          className="form-wrapper"
+          onSubmit={(e) => submitCredentials(e)}
+        />
+      )}
+    </main>
   );
 }
 
