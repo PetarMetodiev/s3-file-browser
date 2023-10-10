@@ -3,7 +3,7 @@ import { Node } from "../TreeNode/TreeNode";
 import { TreeNode, toTree } from "@src/utils/convertToTreeStructure";
 import { useEffect, useState } from "react";
 
-export const TreeWrapper = () => {
+export const TreeView = () => {
   const [tree, setTree] = useState<TreeNode[]>([]);
   const getAllObjects = useGetAllObjects();
 
