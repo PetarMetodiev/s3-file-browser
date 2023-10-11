@@ -14,12 +14,6 @@ import {
   secretAccessKeyLS,
 } from "@src/utils/consts";
 
-type CredentialsContextType = {
-  updateCredentials: (credentials: Credentials) => void;
-  isAuthenticated: boolean;
-  client: S3Client | null;
-};
-
 const defaultContext = {
   updateCredentials: noop,
   isAuthenticated: false,
@@ -28,6 +22,12 @@ const defaultContext = {
   region: localStorage.getItem(regionLS) || "",
   accessKeyId: localStorage.getItem(accessKeyIdLS) || "",
   secretAccessKey: localStorage.getItem(secretAccessKeyLS) || "",
+};
+
+type CredentialsContextType = {
+  updateCredentials: (credentials: Credentials) => void;
+  isAuthenticated: boolean;
+  client: S3Client | null;
 };
 
 export type Credentials = {

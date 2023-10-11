@@ -1,0 +1,7 @@
+.tree-view {
+  list-style-type: none;
+  border: 1px solid black;
+  padding: 1rem;
+  overflow: auto;
+  min-height: 100%;
+}

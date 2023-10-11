@@ -1,47 +1,32 @@
-import { useGetAllObjects } from "@src/hooks/useGetAllObjects";
 import { TreeNode } from "../TreeNode/TreeNode";
-import {
-  TreeNode as TreeNodeType,
-  toTree,
-} from "@src/utils/convertToTreeStructure";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
+
+import "./TreeView.css";
+import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
 
 export const TreeView = () => {
-  const [tree, setTree] = useState<TreeNodeType[]>([]);
-  const getAllObjects = useGetAllObjects();
-
-  useEffect(() => {
-    getAllObjects()
-      .then((r) => {
-        return (r.Contents || [null]).map((obj) => obj?.Key);
-      })
-      .then((r) => {
-        console.log(r);
-        const treeToSet = toTree(r as string[]);
-        console.log(treeToSet);
-        setTree(treeToSet);
-      });
-  }, [getAllObjects]);
+  const { fileTree, isLoading } = useContext(FileContentsContext);
 
   return (
-    <div>
-      {[null, null, null].map((e) => {
-        return e;
-      })}
-      tree wrapper here
-      <ul>
-        {tree.map((n) => {
-          return (
-            <TreeNode
-              path={n.nodeKey}
-              key={`${n.id}-${n.nodeKey}`}
-              nodeKey={n.nodeKey}
-              childNodes={n.childNodes}
-            />
-          );
+    <>
+      <div>
+        {[null, null, null].map((e) => {
+          return e;
         })}
-      </ul>
-      <pre>{JSON.stringify(tree, null, 2)}</pre>
-    </div>
+        <ul className="tree-view">
+          {!isLoading &&
+            fileTree.map((n) => {
+              return (
+                <TreeNode
+                  path={n.nodeKey}
+                  key={`${n.id}-${n.nodeKey}`}
+                  nodeKey={n.nodeKey}
+                  childNodes={n.childNodes}
+                />
+              );
+            })}
+        </ul>
+      </div>
+    </>
   );
 };
