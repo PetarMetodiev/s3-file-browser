@@ -1,0 +1,4 @@
+.file-preview {
+  display: grid;
+  place-content: center;
+}
