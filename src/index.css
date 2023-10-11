@@ -34,7 +34,8 @@ body,
 }
 
 input,
-textarea {
+textarea,
+button {
   font-size: inherit;
   font-family: inherit;
   color: inherit;
