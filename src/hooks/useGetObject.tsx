@@ -1,13 +1,3 @@
-// const getObject = (key: string) => {
-//   const input: GetObjectCommandInput = {
-//     Bucket,
-//     Key: key,
-//   };
-//
-//   const command = new GetObjectCommand(input);
-//   return client.send(command).then((r) => r.Body.transformToString());
-// };
-
 import {
   GetObjectCommand,
   GetObjectCommandInput,
@@ -30,20 +20,19 @@ const makeGetObjectCommand = ({ key, bucket }: GetObjectCommandParameters) => {
   return new GetObjectCommand(input);
 };
 
-export const useGetObject = ({
-  key,
-}: {
-  key: GetObjectCommandParameters["key"];
-}) => {
+export const useGetObject = () => {
   const { bucket, client } = useContext(CredentialsContext);
 
-  const commandCB = useCallback(() => {
-    return client
-      ? client.send(makeGetObjectCommand({ key, bucket }))
-      : Promise.resolve<GetObjectCommandOutput>({
-          $metadata: {},
-        });
-  }, [bucket, client, key]);
+  const commandCB = useCallback(
+    ({ key }: { key: GetObjectCommandParameters["key"] }) => {
+      return client
+        ? client.send(makeGetObjectCommand({ key, bucket }))
+        : Promise.resolve<GetObjectCommandOutput>({
+            $metadata: {},
+          });
+    },
+    [bucket, client]
+  );
 
   return commandCB;
 };

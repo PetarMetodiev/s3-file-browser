@@ -1,13 +1,3 @@
-// const deleteObject = (objKey: string) => {
-//   const input: DeleteObjectCommandInput = {
-//     Bucket,
-//     Key: objKey,
-//   };
-//
-//   const command = new DeleteObjectCommand(input);
-//   return client.send(command).then(console.log);
-// };
-
 import {
   DeleteObjectCommand,
   DeleteObjectCommandInput,
@@ -33,20 +23,19 @@ const makeDeleteObjectCommand = ({
   return new DeleteObjectCommand(input);
 };
 
-export const useDeleteObject = ({
-  key,
-}: {
-  key: DeleteObjectCommandParameters["key"];
-}) => {
+export const useDeleteObject = () => {
   const { bucket, client } = useContext(CredentialsContext);
 
-  const commandCB = useCallback(() => {
-    return client
-      ? client.send(makeDeleteObjectCommand({ bucket, key }))
-      : Promise.resolve<GetObjectCommandOutput>({
-          $metadata: {},
-        });
-  }, [bucket, client, key]);
+  const commandCB = useCallback(
+    ({ key }: { key: DeleteObjectCommandParameters["key"] }) => {
+      return client
+        ? client.send(makeDeleteObjectCommand({ bucket, key }))
+        : Promise.resolve<GetObjectCommandOutput>({
+            $metadata: {},
+          });
+    },
+    [bucket, client]
+  );
 
   return commandCB;
 };

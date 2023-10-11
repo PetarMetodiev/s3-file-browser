@@ -1,15 +1,5 @@
-// const uploadObject = ({ content, key }: ObjectData) => {
-//   // for file upload
-//   // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-lib-storage/
-//   const input: PutObjectCommandInput = {
-//     Bucket,
-//     Key: key,
-//     Body: content,
-//   };
-//
-//   const command = new PutObjectCommand(input);
-//   return client.send(command);
-// };
+// for file upload
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-lib-storage/
 
 import {
   PutObjectCommand,
@@ -39,22 +29,25 @@ const makePutObjectCommand = ({
   return new PutObjectCommand(input);
 };
 
-export const usePutObject = ({
-  key,
-  content,
-}: {
-  key: PutObjectCommandParameters["key"];
-  content: PutObjectCommandParameters["content"];
-}) => {
+export const usePutObject = () => {
   const { bucket, client } = useContext(CredentialsContext);
 
-  const commandCB = useCallback(() => {
-    return client
-      ? client.send(makePutObjectCommand({ bucket, key, content }))
-      : Promise.resolve<PutObjectCommandOutput>({
-          $metadata: {},
-        });
-  }, [bucket, client, key, content]);
+  const commandCB = useCallback(
+    ({
+      content,
+      key,
+    }: {
+      content: PutObjectCommandParameters["content"];
+      key: PutObjectCommandParameters["key"];
+    }) => {
+      return client
+        ? client.send(makePutObjectCommand({ bucket, key, content }))
+        : Promise.resolve<PutObjectCommandOutput>({
+            $metadata: {},
+          });
+    },
+    [bucket, client]
+  );
 
   return commandCB;
 };
