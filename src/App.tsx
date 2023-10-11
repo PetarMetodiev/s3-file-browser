@@ -6,7 +6,8 @@ import {
   Credentials,
   CredentialsContext,
 } from "./contexts/S3CredentialsContextProvider";
-import { TreeView } from "./components/TreeView/TreeView/TreeView";
+import { FileContentsContextProvider } from "./contexts/FileContentsContextProvider";
+import { FileExplorer } from "./components/FileExplorer/FileExplorer";
 
 function App() {
   const { updateCredentials, isAuthenticated } = useContext(CredentialsContext);
@@ -18,7 +19,9 @@ function App() {
   return (
     <main className="main-wrapper">
       {isAuthenticated ? (
-        <TreeView />
+        <FileContentsContextProvider>
+          <FileExplorer />
+        </FileContentsContextProvider>
       ) : (
         <CredentialsForm
           className="form-wrapper"
