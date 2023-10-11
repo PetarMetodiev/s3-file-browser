@@ -29,16 +29,19 @@ export const TreeView = () => {
         return e;
       })}
       tree wrapper here
-      {tree.map((n) => {
-        return (
-          <TreeNode
-            path={n.nodeKey}
-            key={`${n.id}-${n.nodeKey}`}
-            nodeKey={n.nodeKey}
-            childNodes={n.childNodes}
-          />
-        );
-      })}
+      <ul>
+        {tree.map((n) => {
+          return (
+            <TreeNode
+              path={n.nodeKey}
+              key={`${n.id}-${n.nodeKey}`}
+              nodeKey={n.nodeKey}
+              childNodes={n.childNodes}
+            />
+          );
+        })}
+      </ul>
+      <pre>{JSON.stringify(tree, null, 2)}</pre>
     </div>
   );
 };
