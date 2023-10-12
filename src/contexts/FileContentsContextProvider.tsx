@@ -15,6 +15,7 @@ import {
 
 type FileContentsContextType = {
   isLoading: boolean;
+  toggleLoading: ({ shouldLoad }: { shouldLoad: boolean }) => void;
   fileContents: string;
   fetchFileContents: ({
     path,
@@ -57,6 +58,7 @@ type FileContentsContextType = {
 
 const defaultContext: FileContentsContextType = {
   isLoading: true,
+  toggleLoading: noop,
   fileContents: "",
   fetchFileContents: () => Promise.resolve(""),
   objectKeys: [],
@@ -98,6 +100,13 @@ export const FileContentsContextProvider = ({
   const getObject = useGetObject();
   const putObject = usePutObject();
   const deleteAllObjects = useDeleteAllObjects();
+
+  const toggleLoading = useCallback(
+    ({ shouldLoad }: { shouldLoad: boolean }) => {
+      setIsLoading(shouldLoad);
+    },
+    []
+  );
 
   // add support for abort controller
   const fetchFileContents = useCallback(
@@ -195,17 +204,13 @@ export const FileContentsContextProvider = ({
     setFileContents("");
   }, []);
 
-  // useEffect(() => {
-  //   console.log("Delete this when done");
-  //   fetchFileTree();
-  // }, [fetchFileTree]);
-  //
   return (
     <FileContentsContext.Provider
       value={{
         fileContents,
         fetchFileContents,
         isLoading,
+        toggleLoading,
         objectKeys,
         fetchFileTree,
         isUploading,
