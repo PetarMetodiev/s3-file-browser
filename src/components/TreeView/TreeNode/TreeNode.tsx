@@ -1,9 +1,8 @@
 import { useCallback, useContext, useState } from "react";
 
-import type {
-  RawObj,
-  TreeNode as TreeNodeType,
-} from "@src/utils/convertToTreeStructure";
+import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
+import { useDeleteObject } from "@src/hooks/useDeleteObject";
+import { RawObj } from "../TreeView/TreeView";
 
 import "./TreeNode.css";
 import "css.gg/icons/css/folder-add.css";
@@ -11,11 +10,9 @@ import "css.gg/icons/css/folder-remove.css";
 import "css.gg/icons/css/file-document.css";
 import "css.gg/icons/css/trash.css";
 import "css.gg/icons/css/file-add.css";
-import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
-import { useDeleteObject } from "@src/hooks/useDeleteObject";
 
 type NodeProps = {
-  nodeName: TreeNodeType["nodeKey"];
+  nodeName: string;
   path: string;
   isDirectory: boolean;
   onDelete: () => void;
