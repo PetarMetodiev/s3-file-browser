@@ -53,6 +53,7 @@ export const FilePreview = () => {
             {directoryNameError && <span>No /(slash) symbols allowed.</span>}
           </form>
         )}
+        {/* TODO: Fix loading indicator*/}
         {!isLoading && isNewFileInputVisible && (
           <form
             onSubmit={(e) => {

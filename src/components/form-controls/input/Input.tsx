@@ -1,5 +1,5 @@
-import "./Input.css";
 import { ReactNode, useId } from "react";
+import "./Input.css";
 
 type InputProps = {
   label: ReactNode;
