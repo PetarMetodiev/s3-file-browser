@@ -5,7 +5,27 @@
   min-height: 100%;
 
   & [data-tree-container] {
+    & > * + * {
+      margin-top: 2rem;
+    }
+  }
+
+  & [data-nodes-container] {
     list-style-type: none;
+  }
+
+  & [data-root-actions] {
+    display: flex;
+    justify-content: space-around;
+    & button {
+      border: none;
+      background: none;
+      cursor: pointer;
+
+      &:hover {
+        color: var(--accent);
+      }
+    }
   }
 
   & [data-no-files] {
