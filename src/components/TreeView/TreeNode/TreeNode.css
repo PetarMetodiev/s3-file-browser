@@ -22,7 +22,7 @@
   & [data-empty-text] {
     /* color: var(--accent); */
     margin-left: 1rem;
-    opacity: 0.5;
+    opacity: 0.3;
   }
   & [data-expander] {
     border: none;

@@ -31,6 +31,7 @@ export const TreeNode = ({
   const [isEmpty, setIsEmpty] = useState(false);
   const [directoryContents, setDirectoryContents] = useState<RawObj[]>([]);
   const {
+    toggleLoading,
     fetchFileContents,
     fetchDirectoryContents,
     deleteDirectory,
@@ -44,7 +45,6 @@ export const TreeNode = ({
   const pathBelow = `${depth + 1}#${path.slice(pathSeparatorIndex + 1)}`;
 
   const refreshDirectoryContents = useCallback(() => {
-    console.log('refreshing...')
     fetchDirectoryContents({ path: pathBelow }).then((r) => {
       setIsExpanded(true);
       const ps: RawObj[] | undefined = r
@@ -106,7 +106,7 @@ export const TreeNode = ({
                       // deleting only if there are no other directories inside
                       // the reason is that if we start drilling recursively, we could end up with a
                       // network congestion of requests just to gather all child keys
-                      console.log("deleting directory and children...");
+                      toggleLoading({ shouldLoad: true });
                       deleteDirectory({
                         paths: directoryContents
                           .map((dc) => dc.key)
@@ -135,7 +135,10 @@ export const TreeNode = ({
           </button>
           <button
             data-deleter
-            onClick={() => deleteObject({ key: path }).then(() => onDelete())}
+            onClick={() => {
+              toggleLoading({ shouldLoad: true });
+              deleteObject({ key: path }).then(() => onDelete());
+            }}
           >
             <i className="gg-trash"></i>
           </button>
