@@ -1,8 +1,9 @@
 import {
   DeleteObjectCommand,
   DeleteObjectCommandInput,
+  DeleteObjectCommandOutput,
   DeleteObjectsCommand,
-  GetObjectCommandOutput,
+  DeleteObjectsCommandOutput,
 } from "@aws-sdk/client-s3";
 import { CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
 import { useCallback, useContext } from "react";
@@ -31,7 +32,7 @@ export const useDeleteObject = () => {
     ({ key }: { key: DeleteObjectCommandParameters["key"] }) => {
       return client
         ? client.send(makeDeleteObjectCommand({ bucket, key }))
-        : Promise.resolve<GetObjectCommandOutput>({
+        : Promise.resolve<DeleteObjectCommandOutput>({
             $metadata: {},
           });
     },
@@ -45,13 +46,17 @@ export const useDeleteAllObjects = () => {
   const { bucket, client } = useContext(CredentialsContext);
 
   return useCallback(
-    ({ keys }: { keys: string[] }) => {
-      return client.send(
-        new DeleteObjectsCommand({
-          Bucket: bucket,
-          Delete: { Objects: keys.map((k) => ({ Key: k })) },
-        })
-      );
+    ({ keys }: { keys: string[] } = { keys: [] }) => {
+      return client
+        ? client.send(
+            new DeleteObjectsCommand({
+              Bucket: bucket,
+              Delete: { Objects: keys.map((k) => ({ Key: k })) },
+            })
+          )
+        : Promise.resolve<DeleteObjectsCommandOutput>({
+            $metadata: {},
+          });
     },
     [bucket, client]
   );
