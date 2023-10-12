@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 
 import type {
   RawObj,
@@ -18,73 +18,110 @@ type NodeProps = {
   nodeName: TreeNodeType["nodeKey"];
   path: string;
   isDirectory: boolean;
+  onDelete: () => void;
 };
 
-export const TreeNode = ({ nodeName, path, isDirectory }: NodeProps) => {
+export const TreeNode = ({
+  nodeName,
+  path,
+  isDirectory,
+  onDelete,
+}: NodeProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   const [directoryContents, setDirectoryContents] = useState<RawObj[]>([]);
-  const { fetchFileContents, fetchDirectoryContents } =
-    useContext(FileContentsContext);
+  const {
+    fetchFileContents,
+    fetchDirectoryContents,
+    deleteDirectory,
+    showNewFileInput,
+    showNewDirectoryInput,
+  } = useContext(FileContentsContext);
   const deleteObject = useDeleteObject();
 
   const pathSeparatorIndex = path.indexOf("#");
   const depth = parseInt(path.slice(0, pathSeparatorIndex));
   const pathBelow = `${depth + 1}#${path.slice(pathSeparatorIndex + 1)}`;
-  console.log({ depth, path, pathBelow });
+
+  const refreshDirectoryContents = useCallback(() => {
+    console.log('refreshing...')
+    fetchDirectoryContents({ path: pathBelow }).then((r) => {
+      setIsExpanded(true);
+      const ps: RawObj[] | undefined = r
+        .map((o) => ({
+          key: o.Key,
+          isDir: o.Size === 0,
+        }))
+        .sort((a, b) => Number(b.isDir) - Number(a.isDir));
+      setDirectoryContents(ps);
+      setIsEmpty(ps.length === 0);
+    });
+  }, [fetchDirectoryContents, pathBelow]);
 
   return (
     <li className="tree-node">
       {isDirectory ? (
-        <div data-directory>
-          <button
-            data-expander
-            onClick={() =>
-              fetchDirectoryContents({ path: pathBelow }).then((r) => {
-                setIsExpanded(true);
-                const ps: RawObj[] | undefined = r
-                  .map((o) => ({
-                    key: o.Key,
-                    isDir: o.Size === 0,
-                  }))
-                  .sort((a, b) => Number(b.isDir) - Number(a.isDir));
-                setDirectoryContents(ps);
-                setIsEmpty(ps.length === 0);
-              })
-            }
-          >
-            {isExpanded ? (
-              <i className="gg-folder-remove"></i>
-            ) : (
-              <i className="gg-folder-add"></i>
-            )}{" "}
-            {nodeName}/
-          </button>
-          <button
-            data-dir-action
-            onClick={() => {
-              console.log("adding file...");
-            }}
-          >
-            <i className="gg-file-add"></i>
-          </button>
-          <button
-            data-dir-action
-            onClick={() => {
-              console.log("adding directory...");
-            }}
-          >
-            <i className="gg-folder-add"></i>
-          </button>
-          <button
-            data-dir-action
-            onClick={() => {
-              console.log("deleting directory...");
-            }}
-          >
-            <i className="gg-trash"></i>
-          </button>
-          {isEmpty && <div>Nothing here</div>}
+        <div>
+          <div data-directory>
+            <button
+              data-expander
+              onClick={() => {
+                if (isExpanded) {
+                  setIsExpanded(false);
+                  return;
+                }
+                refreshDirectoryContents();
+              }}
+            >
+              {isExpanded ? (
+                <i className="gg-folder-remove"></i>
+              ) : (
+                <i className="gg-folder-add"></i>
+              )}{" "}
+              {nodeName}/
+            </button>
+            {isExpanded && (
+              <>
+                <button
+                  data-dir-action
+                  onClick={() => {
+                    showNewFileInput({ path: pathBelow });
+                  }}
+                >
+                  <i className="gg-file-add"></i>
+                </button>
+                <button
+                  data-dir-action
+                  onClick={() => {
+                    showNewDirectoryInput({ path: pathBelow });
+                  }}
+                >
+                  <i className="gg-folder-add"></i>
+                </button>
+
+                {isExpanded && !directoryContents.some((obj) => obj.isDir) && (
+                  <button
+                    data-dir-action
+                    onClick={() => {
+                      // deleting only if there are no other directories inside
+                      // the reason is that if we start drilling recursively, we could end up with a
+                      // network congestion of requests just to gather all child keys
+                      console.log("deleting directory and children...");
+                      deleteDirectory({
+                        paths: directoryContents
+                          .map((dc) => dc.key)
+                          .concat(path) as string[],
+                      }).then(onDelete);
+                    }}
+                  >
+                    <i className="gg-trash"></i>
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+
+          {isEmpty && isExpanded && <em data-empty-text>Nothing here</em>}
         </div>
       ) : (
         <div className="leaf-node">
@@ -96,12 +133,15 @@ export const TreeNode = ({ nodeName, path, isDirectory }: NodeProps) => {
           >
             <i className="gg-file-document"></i> {nodeName}{" "}
           </button>
-          <button data-deleter onClick={() => deleteObject({ key: path })}>
+          <button
+            data-deleter
+            onClick={() => deleteObject({ key: path }).then(() => onDelete())}
+          >
             <i className="gg-trash"></i>
           </button>
         </div>
       )}
-      {directoryContents.length > 0 && (
+      {isExpanded && directoryContents.length > 0 && (
         <ul>
           {directoryContents.map((dc) => {
             const nodeName = dc.key?.split("/").at(-1);
@@ -111,6 +151,7 @@ export const TreeNode = ({ nodeName, path, isDirectory }: NodeProps) => {
                 nodeName={nodeName!}
                 isDirectory={dc.isDir}
                 path={dc.key!}
+                onDelete={() => refreshDirectoryContents()}
               />
             );
           })}
