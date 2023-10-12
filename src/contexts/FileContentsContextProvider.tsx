@@ -9,14 +9,18 @@ import {
   PropsWithChildren,
   createContext,
   useCallback,
-  useEffect,
+  // useEffect,
   useState,
 } from "react";
 
 type FileContentsContextType = {
   isLoading: boolean;
   fileContents: string;
-  fetchFileContents: ({ path }: { path: string }) => void;
+  fetchFileContents: ({
+    path,
+  }: {
+    path: string;
+  }) => Promise<string | undefined>;
   objectKeys?: _Object[];
   fetchFileTree: () => void;
   isUploading: boolean;
@@ -28,7 +32,7 @@ type FileContentsContextType = {
     content: string;
     fileName: string;
     path: string;
-  }) => void;
+  }) => Promise<void>;
   deleteAllObjects: () => void;
   createDirectory: ({
     path,
@@ -36,29 +40,39 @@ type FileContentsContextType = {
   }: {
     path: string;
     directoryName: string;
-  }) => void;
-  fetchDirectoryContents: ({ path }: { path: string }) => Promise<_Object[] | []>;
+  }) => Promise<void>;
+  deleteDirectory: ({ paths }: { paths: string[] }) => Promise<unknown>;
+  fetchDirectoryContents: ({
+    path,
+  }: {
+    path: string;
+  }) => Promise<_Object[] | []>;
   isNewDirectoryInputVisible: boolean;
-  showNewDirectoryInput: () => void;
+  showNewDirectoryInput: ({ path }: { path: string }) => void;
   isNewFileInputVisible: boolean;
-  showNewFileInput: () => void;
+  showNewFileInput: ({ path }: { path: string }) => void;
+  selectedPath: string;
+  displayPath: string;
 };
 
 const defaultContext: FileContentsContextType = {
-  isLoading: false,
+  isLoading: true,
   fileContents: "",
-  fetchFileContents: noop,
+  fetchFileContents: () => Promise.resolve(""),
   objectKeys: [],
   fetchFileTree: noop,
   isUploading: false,
-  uploadFile: noop,
+  uploadFile: () => Promise.resolve(),
   deleteAllObjects: noop,
-  createDirectory: noop,
+  createDirectory: () => Promise.resolve(),
+  deleteDirectory: () => Promise.resolve(),
   fetchDirectoryContents: () => Promise.resolve([]),
   isNewDirectoryInputVisible: false,
   showNewDirectoryInput: noop,
   isNewFileInputVisible: false,
   showNewFileInput: noop,
+  selectedPath: "",
+  displayPath: "",
 };
 
 export const FileContentsContext =
@@ -77,6 +91,8 @@ export const FileContentsContextProvider = ({
   const [isNewDirectoryInputVisible, setIsNewDirectoryInputVisible] = useState(
     defaultContext.isNewDirectoryInputVisible
   );
+  const [selectedPath, setSelectedPath] = useState(defaultContext.selectedPath);
+  const [displayPath, setDisplayPath] = useState(defaultContext.displayPath);
 
   const getAllObjects = useGetAllObjects();
   const getObject = useGetObject();
@@ -87,11 +103,17 @@ export const FileContentsContextProvider = ({
   const fetchFileContents = useCallback(
     ({ path }: { path: string }) => {
       setIsLoading(true);
-      getObject({ key: path })
+      return getObject({ key: path })
         .then((r) => r.Body?.transformToString())
         .then((v) => {
           setIsLoading(false);
           setFileContents(v || "no data");
+
+          const pathSeparatorIndex = path.indexOf("#");
+          setDisplayPath(`${path.slice(pathSeparatorIndex + 1)}`);
+          setIsNewFileInputVisible(false);
+          setIsNewDirectoryInputVisible(false);
+          return v;
         });
     },
     [getObject]
@@ -110,19 +132,11 @@ export const FileContentsContextProvider = ({
 
   const fetchFileTree = useCallback(() => {
     setIsLoading(true);
-    getAllObjects()
-      // .then((r) => {
-      //   console.log(r);
-      //   console.log(r.Contents)
-      //   return (r.Contents || [{ Key: null }]).map((obj) => obj?.Key);
-      // })
-      .then((r) => {
-        console.log(r);
-        // deleteAllObjects({ keys: r });
-        // const treeToSet = toTree(r as string[]);
-        setIsLoading(false);
-        setObjectKeys(r.Contents);
-      });
+    getAllObjects().then((r) => {
+      console.log(r);
+      setIsLoading(false);
+      setObjectKeys(r.Contents);
+    });
   }, [getAllObjects]);
 
   const uploadFile = useCallback(
@@ -136,45 +150,56 @@ export const FileContentsContextProvider = ({
       content: string;
     }) => {
       setIsUploading(true);
-      putObject({ key: `${path}/${fileName}`, content }).then(() => {
+      return putObject({ key: `${path}/${fileName}`, content }).then(() => {
         setIsUploading(false);
         setIsNewFileInputVisible(false);
         setIsNewDirectoryInputVisible(false);
-        fetchFileTree();
       });
     },
-    [fetchFileTree, putObject]
+    [putObject]
   );
 
   const createDirectory = useCallback(
     ({ path, directoryName }: { path: string; directoryName: string }) => {
       setIsUploading(true);
       const key = `${path}/${directoryName}`;
-      putObject({ key, content: "" }).then(() => {
+      return putObject({ key, content: "" }).then(() => {
         setIsUploading(false);
         setIsNewFileInputVisible(false);
         setIsNewDirectoryInputVisible(false);
-        fetchFileTree();
       });
     },
-    [putObject, fetchFileTree]
+    [putObject]
   );
 
-  const showNewDirectoryInput = useCallback(() => {
+  const deleteDirectory = useCallback(
+    ({ paths }: { paths: string[] }) => {
+      return deleteAllObjects({ keys: paths }).then((r) => r.Deleted);
+    },
+    [deleteAllObjects]
+  );
+
+  const showNewDirectoryInput = useCallback(({ path }: { path: string }) => {
     setIsNewFileInputVisible(false);
+    setSelectedPath(path);
     setIsNewDirectoryInputVisible(true);
+    setDisplayPath("");
+    setFileContents("");
   }, []);
 
-  const showNewFileInput = useCallback(() => {
+  const showNewFileInput = useCallback(({ path }: { path: string }) => {
     setIsNewDirectoryInputVisible(false);
+    setSelectedPath(path);
     setIsNewFileInputVisible(true);
+    setDisplayPath("");
+    setFileContents("");
   }, []);
 
-  useEffect(() => {
-    console.log("Delete this when done");
-    fetchFileTree();
-  }, [fetchFileTree]);
-
+  // useEffect(() => {
+  //   console.log("Delete this when done");
+  //   fetchFileTree();
+  // }, [fetchFileTree]);
+  //
   return (
     <FileContentsContext.Provider
       value={{
@@ -188,14 +213,17 @@ export const FileContentsContextProvider = ({
         deleteAllObjects: () => {
           getAllObjects()
             .then((r) => r.Contents?.map((o) => o.Key))
-            .then((r) => deleteAllObjects({ keys: r }));
+            .then((r) => deleteAllObjects({ keys: r as string[] }));
         },
         createDirectory,
+        deleteDirectory,
         fetchDirectoryContents,
         isNewDirectoryInputVisible,
         showNewDirectoryInput,
         isNewFileInputVisible,
         showNewFileInput,
+        selectedPath,
+        displayPath,
       }}
     >
       {children}
