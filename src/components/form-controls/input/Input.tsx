@@ -1,11 +1,12 @@
 import "./Input.css";
-import { useId } from "react";
+import { ReactNode, useId } from "react";
 
 type InputProps = {
-  label: string;
+  label: ReactNode;
   onChange: (v: string) => void;
   value: string;
   required?: boolean;
+  minlength?: number;
   className?: string;
 };
 
@@ -14,6 +15,7 @@ export const Input = ({
   onChange,
   value,
   required,
+  minlength,
   className,
 }: InputProps) => {
   const id = useId();
@@ -28,6 +30,7 @@ export const Input = ({
         id={id}
         value={value}
         required={required}
+        minLength={minlength}
         onChange={(e) => onChange(e.target.value)}
       />
     </div>

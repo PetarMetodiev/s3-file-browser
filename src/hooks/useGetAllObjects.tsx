@@ -8,9 +8,16 @@ import {
 
 import { CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
 
-const makeGetAllObjectsCommand = (bucket: string) => {
+const makeGetAllObjectsCommand = ({
+  bucket,
+  prefix,
+}: {
+  bucket: string;
+  prefix: string;
+}) => {
   const input: ListObjectsV2CommandInput = {
     Bucket: bucket,
+    Prefix: prefix,
   };
 
   return new ListObjectsV2Command(input);
@@ -18,13 +25,16 @@ const makeGetAllObjectsCommand = (bucket: string) => {
 export const useGetAllObjects = () => {
   const { bucket, client } = useContext(CredentialsContext);
 
-  const commandCB = useCallback(() => {
-    return client
-      ? client.send(makeGetAllObjectsCommand(bucket))
-      : Promise.resolve<ListObjectsV2CommandOutput>({
-          $metadata: {},
-        });
-  }, [bucket, client]);
+  const commandCB = useCallback(
+    ({ prefix }: { prefix: string } = { prefix: "" }) => {
+      return client
+        ? client.send(makeGetAllObjectsCommand({ bucket, prefix }))
+        : Promise.resolve<ListObjectsV2CommandOutput>({
+            $metadata: {},
+          });
+    },
+    [bucket, client]
+  );
 
   return commandCB;
 };

@@ -12,7 +12,7 @@ import { useCallback, useContext } from "react";
 type PutObjectCommandParameters = {
   content: PutObjectCommandInput["Body"];
   key: PutObjectCommandInput["Key"];
-  bucket: PutObjectCommandInput["Bucket"];
+  bucket?: PutObjectCommandInput["Bucket"];
 };
 
 const makePutObjectCommand = ({

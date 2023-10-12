@@ -79,3 +79,63 @@ export const toTree = (arr: string[]) => {
       })
   );
 };
+export type RawObj = {
+  key?: string;
+  isDir: boolean;
+};
+
+type TreeFile = {
+  id: number;
+  nodeKey: string;
+  isDir: false;
+};
+
+type TreeDirectory = {
+  id: number;
+  nodeKey: string;
+  isDir: true;
+  children: TreeNode2[];
+};
+type TreeNode2 = TreeFile | TreeDirectory;
+
+const isDir = (obj: RawObj) => obj.isDir;
+
+// if (isLeaf(obj)) {
+//
+//   return obj;
+// }
+//
+// const index = obj.indexOf("/");
+// const first = obj.substring(0, index);
+// const second = obj.substring(index + 1, obj.length);
+//
+// if (!first) {
+//   return {
+//     id: id++,
+//     nodeKey: second,
+//     childNodes: [leafNode],
+//   };
+// }
+//
+// return {
+//   id: id++,
+//   nodeKey: first,
+//   childNodes: [second],
+// };
+//
+
+const toTreeNode2 = (obj: RawObj): TreeNode2 => {
+  if (!isDir(obj)) {
+    return {
+      id: id++,
+      nodeKey: obj.key,
+      isDir: false,
+    };
+  }
+
+  const index = obj.indexOf("/");
+  const first = obj.substring(0, index);
+  const second = obj.substring(index + 1, obj.length);
+};
+
+export const toTree2 = (arr: RawObj[]) => {};

@@ -33,10 +33,3 @@ function App() {
 }
 
 export default App;
-
-// const Bucket = localStorage.getItem("bucket") || "";
-
-// type ObjectData = {
-//   key: string;
-//   content: string;
-// };

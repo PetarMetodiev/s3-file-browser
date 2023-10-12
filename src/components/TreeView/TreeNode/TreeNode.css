@@ -3,6 +3,33 @@
   padding-left: 1rem;
   white-space: nowrap;
 
+  & button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  [data-fetcher]:hover,
+  [data-expander]:hover {
+    outline: 0.2rem solid var(--accent);
+
+    outline-offset: 0.2rem;
+  }
+
+  & [data-directory] {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    & [data-dir-action] {
+      display: none;
+    }
+
+    &:hover [data-dir-action] {
+      display: inline-block;
+    }
+  }
+
   & [data-expander] {
     border: none;
     background: transparent;
@@ -14,15 +41,20 @@
   }
 
   & .leaf-node {
-    & [data-data-fetcher] {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    & [data-fetcher] {
       border: none;
       background: transparent;
+      cursor: pointer;
     }
 
     & [data-deleter] {
       display: none;
       border: none;
       background: none;
+      cursor: pointer;
     }
 
     &:hover [data-deleter] {
