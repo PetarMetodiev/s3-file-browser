@@ -14,6 +14,7 @@ export const FilePreview = () => {
     createDirectory,
     uploadFile,
     deleteAllObjects,
+    selectedPath,
   } = useContext(FileContentsContext);
 
   const [newDirectory, setNewDirectory] = useState("");
@@ -24,66 +25,70 @@ export const FilePreview = () => {
 
   return (
     <div className="file-preview">
+      {selectedPath}
       {/* TODO: remove*/}
       <Button onClick={deleteAllObjects}>Delete all</Button>
-      {/* {isNewDirectoryInputVisible && ( */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (newDirectory.includes("/")) {
-            setDirectoryNameError(true);
-          } else {
-            createDirectory({ directoryName: newDirectory, path: "1#/test" });
-            setDirectoryNameError(false);
-          }
-        }}
-      >
-        <Input
-          label="Enter new directory name(min 3 chars, no / allowed)"
-          onChange={setNewDirectory}
-          value={newDirectory}
-          required
-          minlength={3}
-        />
-        <Button>Create</Button>
-        {directoryNameError && <span>No /(slash) symbols allowed.</span>}
-      </form>
-      {/* )} */}
-      {/* {isNewFileInputVisible && ( */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
+      {isNewDirectoryInputVisible && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (newDirectory.includes("/")) {
+              setDirectoryNameError(true);
+            } else {
+              createDirectory({
+                directoryName: newDirectory,
+                path: selectedPath,
+              });
+              setDirectoryNameError(false);
+            }
+          }}
+        >
+          <Input
+            label="Enter new directory name(min 3 chars, no / allowed)"
+            onChange={setNewDirectory}
+            value={newDirectory}
+            required
+            minlength={3}
+          />
+          <Button>Create</Button>
+          {directoryNameError && <span>No /(slash) symbols allowed.</span>}
+        </form>
+      )}
+      {isNewFileInputVisible && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
 
-          if (newFileName.includes("/")) {
-            setFileNameError(true);
-          } else {
-            setFileNameError(false);
-            uploadFile({
-              content: newFileContent,
-              fileName: newFileName,
-              path: "2#/test/test2",
-            });
-          }
-        }}
-      >
-        <Input
-          label="Enter new file name(min 3 chars)"
-          onChange={setNewFileName}
-          value={newFileName}
-          required
-          minlength={3}
-        />
-        <Input
-          label="Enter contents(min 3 chars)"
-          onChange={setNewFileContent}
-          value={newFileContent}
-          required
-          minlength={3}
-        />
-        <Button>Upload</Button>
-        {fileNameError && <span>No /(slash) symbols allowed.</span>}
-      </form>
-      {/* )} */}
+            if (newFileName.includes("/")) {
+              setFileNameError(true);
+            } else {
+              setFileNameError(false);
+              uploadFile({
+                content: newFileContent,
+                fileName: newFileName,
+                path: selectedPath,
+              });
+            }
+          }}
+        >
+          <Input
+            label="Enter new file name(min 3 chars)"
+            onChange={setNewFileName}
+            value={newFileName}
+            required
+            minlength={3}
+          />
+          <Input
+            label="Enter contents(min 3 chars)"
+            onChange={setNewFileContent}
+            value={newFileContent}
+            required
+            minlength={3}
+          />
+          <Button>Upload</Button>
+          {fileNameError && <span>No /(slash) symbols allowed.</span>}
+        </form>
+      )}
       {!isNewFileInputVisible && !isNewDirectoryInputVisible
         ? isLoading
           ? "loading..."
