@@ -15,6 +15,7 @@ export const FilePreview = () => {
     uploadFile,
     deleteAllObjects,
     selectedPath,
+    displayPath,
   } = useContext(FileContentsContext);
 
   const [newDirectory, setNewDirectory] = useState("");
@@ -26,20 +27,22 @@ export const FilePreview = () => {
   return (
     <div className="file-preview">
       {selectedPath}
+      <hr />
+      {displayPath}
       {/* TODO: remove*/}
       <Button onClick={deleteAllObjects}>Delete all</Button>
-      {isNewDirectoryInputVisible && (
+      {!isLoading && isNewDirectoryInputVisible && (
         <form
           onSubmit={(e) => {
             e.preventDefault();
             if (newDirectory.includes("/")) {
               setDirectoryNameError(true);
             } else {
+              setDirectoryNameError(false);
               createDirectory({
                 directoryName: newDirectory,
                 path: selectedPath,
-              });
-              setDirectoryNameError(false);
+              }).then(() => setNewDirectory(""));
             }
           }}
         >
@@ -54,7 +57,7 @@ export const FilePreview = () => {
           {directoryNameError && <span>No /(slash) symbols allowed.</span>}
         </form>
       )}
-      {isNewFileInputVisible && (
+      {!isLoading && isNewFileInputVisible && (
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -67,6 +70,9 @@ export const FilePreview = () => {
                 content: newFileContent,
                 fileName: newFileName,
                 path: selectedPath,
+              }).then(() => {
+                setNewFileName("");
+                setNewFileContent("");
               });
             }
           }}
