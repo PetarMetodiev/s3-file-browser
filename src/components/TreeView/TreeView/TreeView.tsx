@@ -1,17 +1,23 @@
-import { TreeNode } from "../TreeNode/TreeNode";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { TreeNode } from "../TreeNode/TreeNode";
 
-import "./TreeView.css";
 import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
-import { RawObj } from "@src/utils/convertToTreeStructure";
 import { Button } from "@src/components/form-controls/Button/Button";
 
+import "./TreeView.css";
 import "css.gg/icons/css/file-add.css";
 import "css.gg/icons/css/folder-add.css";
+import { CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
+
+export type RawObj = {
+  key?: string;
+  isDir: boolean;
+};
 
 export const TreeView = () => {
   const { fetchDirectoryContents, showNewFileInput, showNewDirectoryInput } =
     useContext(FileContentsContext);
+  const { updateCredentials } = useContext(CredentialsContext);
   const [paths, setPaths] = useState<RawObj[] | undefined>();
 
   const refreshDirectoryContents = useCallback(() => {
@@ -74,6 +80,18 @@ export const TreeView = () => {
           </Button>
         </div>
       )}
+      <Button
+        onClick={() =>
+          updateCredentials({
+            accessKeyId: "",
+            bucket: "",
+            region: "",
+            secretAccessKey: "",
+          })
+        }
+      >
+        Logout
+      </Button>
     </div>
   );
 };
