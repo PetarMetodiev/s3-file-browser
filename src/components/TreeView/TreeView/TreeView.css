@@ -1,5 +1,4 @@
 .tree-view {
-  border: 1px solid var(--text);
   padding: 1rem;
   overflow: auto;
   min-height: 100%;

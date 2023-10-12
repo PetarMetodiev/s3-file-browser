@@ -1,4 +1,7 @@
 .file-explorer {
   display: grid;
   grid-template-columns: minmax(10rem, 1fr) 4fr;
+  & > * {
+    border: 1px solid var(--accent);
+  }
 }
