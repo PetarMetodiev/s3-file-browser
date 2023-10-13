@@ -81,13 +81,23 @@ export const TreeView = () => {
         <div data-no-files>
           Nothing found in the bucket.
           <Button
-            onClick={() => showNewDirectoryInput({ path: "0#" })}
+            onClick={() =>
+              showNewDirectoryInput({
+                path: "0#",
+                onClose: refreshDirectoryContents,
+              })
+            }
             data-add-files
           >
             Add a dir?
           </Button>
           <Button
-            onClick={() => showNewFileInput({ path: "0#" })}
+            onClick={() =>
+              showNewFileInput({
+                path: "0#",
+                onClose: refreshDirectoryContents,
+              })
+            }
             data-add-files
           >
             Or a file?

@@ -55,7 +55,7 @@ type FileContentsContextType = {
     onClose,
   }: {
     path: string;
-    onClose?: () => void; // possibly return the reason for closing the input
+    onClose: () => void; // possibly return the reason for closing the input
   }) => void;
   isNewFileInputVisible: boolean;
   showNewFileInput: ({
@@ -63,7 +63,7 @@ type FileContentsContextType = {
     onClose,
   }: {
     path: string;
-    onClose?: () => void; // possibly return the reason for closing the input
+    onClose: () => void; // possibly return the reason for closing the input
   }) => void;
   selectedPath: string;
   displayPath: string;
@@ -167,7 +167,6 @@ export const FileContentsContextProvider = ({
       fileName: string;
       content: string;
     }) => {
-      // setNetworkError(defaultContext.networkError);
       setIsUploading(true);
       return putObject({ key: `${path}/${fileName}`, content }).then(() => {
         setIsUploading(false);
@@ -182,7 +181,6 @@ export const FileContentsContextProvider = ({
 
   const createDirectory = useCallback(
     ({ path, directoryName }: { path: string; directoryName: string }) => {
-      // setNetworkError(defaultContext.networkError);
       setIsUploading(true);
       const key = `${path}/${directoryName}`;
       return putObject({ key, content: "" }).then(() => {
@@ -224,7 +222,7 @@ export const FileContentsContextProvider = ({
   );
 
   const showNewDirectoryInput = useCallback(
-    ({ path, onClose }: { path: string; onClose?: () => void }) => {
+    ({ path, onClose }: { path: string; onClose: () => void }) => {
       setOnCloseInputCallback(() => onClose);
       setIsNewFileInputVisible(false);
       setSelectedPath(path);
@@ -237,7 +235,7 @@ export const FileContentsContextProvider = ({
   );
 
   const showNewFileInput = useCallback(
-    ({ path, onClose }: { path: string; onClose?: () => void }) => {
+    ({ path, onClose }: { path: string; onClose: () => void }) => {
       setOnCloseInputCallback(() => onClose);
       setIsNewDirectoryInputVisible(false);
       setSelectedPath(path);
