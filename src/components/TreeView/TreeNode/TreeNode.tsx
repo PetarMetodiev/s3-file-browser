@@ -82,7 +82,10 @@ export const TreeNode = ({
                 <button
                   data-dir-action
                   onClick={() => {
-                    showNewFileInput({ path: pathBelow });
+                    showNewFileInput({
+                      path: pathBelow,
+                      onClose: () => refreshDirectoryContents(),
+                    });
                   }}
                 >
                   <i className="gg-file-add"></i>
@@ -90,7 +93,10 @@ export const TreeNode = ({
                 <button
                   data-dir-action
                   onClick={() => {
-                    showNewDirectoryInput({ path: pathBelow });
+                    showNewDirectoryInput({
+                      path: pathBelow,
+                      onClose: () => refreshDirectoryContents(),
+                    });
                   }}
                 >
                   <i className="gg-folder-add"></i>

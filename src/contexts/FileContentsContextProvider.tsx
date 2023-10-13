@@ -49,9 +49,21 @@ type FileContentsContextType = {
     path: string;
   }) => Promise<_Object[] | []>;
   isNewDirectoryInputVisible: boolean;
-  showNewDirectoryInput: ({ path }: { path: string }) => void;
+  showNewDirectoryInput: ({
+    path,
+    onClose,
+  }: {
+    path: string;
+    onClose?: () => void; // possibly return the reason for closing the input
+  }) => void;
   isNewFileInputVisible: boolean;
-  showNewFileInput: ({ path }: { path: string }) => void;
+  showNewFileInput: ({
+    path,
+    onClose,
+  }: {
+    path: string;
+    onClose?: () => void; // possibly return the reason for closing the input
+  }) => void;
   selectedPath: string;
   displayPath: string;
 };
@@ -95,6 +107,8 @@ export const FileContentsContextProvider = ({
   );
   const [selectedPath, setSelectedPath] = useState(defaultContext.selectedPath);
   const [displayPath, setDisplayPath] = useState(defaultContext.displayPath);
+
+  const [onCloseInputCallback, setOnCloseInputCallback] = useState(() => noop);
 
   const getAllObjects = useGetAllObjects();
   const getObject = useGetObject();
@@ -163,9 +177,10 @@ export const FileContentsContextProvider = ({
         setIsUploading(false);
         setIsNewFileInputVisible(false);
         setIsNewDirectoryInputVisible(false);
+        onCloseInputCallback();
       });
     },
-    [putObject]
+    [putObject, onCloseInputCallback]
   );
 
   const createDirectory = useCallback(
@@ -176,9 +191,10 @@ export const FileContentsContextProvider = ({
         setIsUploading(false);
         setIsNewFileInputVisible(false);
         setIsNewDirectoryInputVisible(false);
+        onCloseInputCallback();
       });
     },
-    [putObject]
+    [putObject, onCloseInputCallback]
   );
 
   const deleteDirectory = useCallback(
@@ -188,21 +204,29 @@ export const FileContentsContextProvider = ({
     [deleteAllObjects]
   );
 
-  const showNewDirectoryInput = useCallback(({ path }: { path: string }) => {
-    setIsNewFileInputVisible(false);
-    setSelectedPath(path);
-    setIsNewDirectoryInputVisible(true);
-    setDisplayPath("");
-    setFileContents("");
-  }, []);
+  const showNewDirectoryInput = useCallback(
+    ({ path, onClose }: { path: string; onClose?: () => void }) => {
+      setOnCloseInputCallback(() => onClose);
+      setIsNewFileInputVisible(false);
+      setSelectedPath(path);
+      setIsNewDirectoryInputVisible(true);
+      setDisplayPath("");
+      setFileContents("");
+    },
+    []
+  );
 
-  const showNewFileInput = useCallback(({ path }: { path: string }) => {
-    setIsNewDirectoryInputVisible(false);
-    setSelectedPath(path);
-    setIsNewFileInputVisible(true);
-    setDisplayPath("");
-    setFileContents("");
-  }, []);
+  const showNewFileInput = useCallback(
+    ({ path, onClose }: { path: string; onClose?: () => void }) => {
+      setOnCloseInputCallback(() => onClose);
+      setIsNewDirectoryInputVisible(false);
+      setSelectedPath(path);
+      setIsNewFileInputVisible(true);
+      setDisplayPath("");
+      setFileContents("");
+    },
+    []
+  );
 
   return (
     <FileContentsContext.Provider
