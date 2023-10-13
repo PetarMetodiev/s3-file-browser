@@ -1,7 +1,7 @@
 import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
 import "./FilePreview.css";
 import { useContext, useEffect, useState } from "react";
-import { Input } from "../form-controls/Input/Input";
+import { Input } from "../Input/Input";
 import { Button } from "../form-controls/Button/Button";
 
 export const FilePreview = () => {

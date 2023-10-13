@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
-import { Input } from "../form-controls/Input/Input";
-import { Button } from "../form-controls/Button/Button";
+import { Input } from "../Input/Input";
+import { Button } from "..//Button/Button";
 
 import { Credentials } from "@contexts/S3CredentialsContextProvider";
 
