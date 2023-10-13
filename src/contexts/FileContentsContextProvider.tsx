@@ -24,8 +24,6 @@ type FileContentsContextType = {
   }: {
     path: string;
   }) => Promise<string | undefined>;
-  objectKeys?: _Object[];
-  fetchFileTree: () => void;
   isUploading: boolean;
   uploadFile: ({
     content,
@@ -76,8 +74,6 @@ const defaultContext: FileContentsContextType = {
   isLoading: true,
   fileContents: "",
   fetchFileContents: () => Promise.resolve(""),
-  objectKeys: [],
-  fetchFileTree: noop,
   isUploading: false,
   uploadFile: () => Promise.resolve(),
   deleteAllObjects: noop,
@@ -102,7 +98,6 @@ export const FileContentsContextProvider = ({
 }: PropsWithChildren) => {
   const [isLoading, setIsLoading] = useState(defaultContext.isLoading);
   const [fileContents, setFileContents] = useState(defaultContext.fileContents);
-  const [objectKeys, setObjectKeys] = useState(defaultContext.objectKeys);
   const [isUploading, setIsUploading] = useState(defaultContext.isUploading);
   const [isNewFileInputVisible, setIsNewFileInputVisible] = useState(
     defaultContext.isNewFileInputVisible
@@ -132,7 +127,6 @@ export const FileContentsContextProvider = ({
   // add support for abort controller
   const fetchFileContents = useCallback(
     ({ path }: { path: string }) => {
-      // setNetworkError(defaultContext.networkError);
       setIsLoading(true);
       return getObject({ key: path })
         .then((r) => r.Body?.transformToString())
@@ -153,7 +147,6 @@ export const FileContentsContextProvider = ({
 
   const fetchDirectoryContents = useCallback(
     ({ path }: { path: string }) => {
-      // setNetworkError(defaultContext.networkError);
       setIsLoading(true);
       return getAllObjects({ prefix: path }).then((r) => {
         setIsLoading(false);
@@ -163,16 +156,6 @@ export const FileContentsContextProvider = ({
     },
     [getAllObjects]
   );
-
-  const fetchFileTree = useCallback(() => {
-    // setNetworkError(defaultContext.networkError);
-    setIsLoading(true);
-    getAllObjects().then((r) => {
-      setIsLoading(false);
-      setNetworkError(defaultContext.networkError);
-      setObjectKeys(r.Contents);
-    });
-  }, [getAllObjects]);
 
   const uploadFile = useCallback(
     ({
@@ -272,8 +255,6 @@ export const FileContentsContextProvider = ({
         fileContents,
         fetchFileContents,
         isLoading,
-        objectKeys,
-        fetchFileTree,
         isUploading,
         uploadFile,
         deleteAllObjects: () => {
