@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { TreeNode } from "../TreeNode/TreeNode";
 
 import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
-import { Button } from "@src/components/form-controls/Button/Button";
+import { Button } from "@src/components/Button/Button";
 
 import "./TreeView.css";
 import "css.gg/icons/css/file-add.css";
