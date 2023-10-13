@@ -1,6 +1,6 @@
 import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
 import "./FilePreview.css";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Input } from "../form-controls/Input/Input";
 import { Button } from "../form-controls/Button/Button";
 
@@ -8,13 +8,13 @@ export const FilePreview = () => {
   const {
     fileContents,
     isLoading,
-    objectKeys,
     isNewFileInputVisible,
     isNewDirectoryInputVisible,
     createDirectory,
     uploadFile,
     selectedPath,
     displayPath,
+    networkError,
   } = useContext(FileContentsContext);
 
   const [newDirectory, setNewDirectory] = useState("");
@@ -22,6 +22,29 @@ export const FilePreview = () => {
   const [newFileName, setNewFileName] = useState("");
   const [fileNameError, setFileNameError] = useState(false);
   const [newFileContent, setNewFileContent] = useState("");
+
+  const [displayMessage, setDisplayMessage] = useState("");
+
+  useEffect(() => {
+    console.log(networkError);
+    if (!isNewFileInputVisible && !isNewDirectoryInputVisible) {
+      if (isLoading) {
+        setDisplayMessage("Loading...");
+      } else if (networkError.name || networkError.message) {
+        setDisplayMessage(`${networkError.name}: ${networkError.message}`);
+      } else if (fileContents) {
+        setDisplayMessage(fileContents);
+      } else {
+        setDisplayMessage("Click on a file to see its content");
+      }
+    }
+  }, [
+    isNewFileInputVisible,
+    isNewDirectoryInputVisible,
+    networkError,
+    isLoading,
+    fileContents,
+  ]);
 
   return (
     <div className="file-preview">
@@ -92,18 +115,7 @@ export const FilePreview = () => {
             {fileNameError && <span>No /(slash) symbols allowed.</span>}
           </form>
         )}
-        {!isNewFileInputVisible && !isNewDirectoryInputVisible
-          ? isLoading
-            ? "loading..."
-            : !objectKeys
-            ? "Create a directory or a file"
-            : fileContents
-          : ""}
-        {!isNewFileInputVisible &&
-          !isNewDirectoryInputVisible &&
-          !isLoading &&
-          !fileContents &&
-          "Click on a file to see its contents"}
+        {displayMessage}
       </div>
     </div>
   );
