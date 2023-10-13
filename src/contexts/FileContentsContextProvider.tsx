@@ -1,5 +1,8 @@
-import { _Object } from "@aws-sdk/client-s3";
-import { useDeleteAllObjects } from "@src/hooks/useDeleteObject";
+import { S3ServiceException, _Object } from "@aws-sdk/client-s3";
+import {
+  useDeleteAllObjects,
+  useDeleteObject,
+} from "@src/hooks/useDeleteObject";
 import { useGetAllObjects } from "@src/hooks/useGetAllObjects";
 import { useGetObject } from "@src/hooks/useGetObject";
 import { usePutObject } from "@src/hooks/usePutObject";
@@ -15,7 +18,6 @@ import {
 
 type FileContentsContextType = {
   isLoading: boolean;
-  toggleLoading: ({ shouldLoad }: { shouldLoad: boolean }) => void;
   fileContents: string;
   fetchFileContents: ({
     path,
@@ -43,6 +45,7 @@ type FileContentsContextType = {
     directoryName: string;
   }) => Promise<void>;
   deleteDirectory: ({ paths }: { paths: string[] }) => Promise<unknown>;
+  deleteFile: ({ path }: { path: string }) => Promise<unknown>;
   fetchDirectoryContents: ({
     path,
   }: {
@@ -66,11 +69,11 @@ type FileContentsContextType = {
   }) => void;
   selectedPath: string;
   displayPath: string;
+  networkError: { name: string; message: string };
 };
 
 const defaultContext: FileContentsContextType = {
   isLoading: true,
-  toggleLoading: noop,
   fileContents: "",
   fetchFileContents: () => Promise.resolve(""),
   objectKeys: [],
@@ -80,6 +83,7 @@ const defaultContext: FileContentsContextType = {
   deleteAllObjects: noop,
   createDirectory: () => Promise.resolve(),
   deleteDirectory: () => Promise.resolve(),
+  deleteFile: () => Promise.resolve(),
   fetchDirectoryContents: () => Promise.resolve([]),
   isNewDirectoryInputVisible: false,
   showNewDirectoryInput: noop,
@@ -87,6 +91,7 @@ const defaultContext: FileContentsContextType = {
   showNewFileInput: noop,
   selectedPath: "",
   displayPath: "",
+  networkError: { name: "", message: "" },
 };
 
 export const FileContentsContext =
@@ -107,29 +112,33 @@ export const FileContentsContextProvider = ({
   );
   const [selectedPath, setSelectedPath] = useState(defaultContext.selectedPath);
   const [displayPath, setDisplayPath] = useState(defaultContext.displayPath);
+  const [networkError, setNetworkError] = useState(defaultContext.networkError);
 
   const [onCloseInputCallback, setOnCloseInputCallback] = useState(() => noop);
 
   const getAllObjects = useGetAllObjects();
   const getObject = useGetObject();
   const putObject = usePutObject();
+  const deleteObject = useDeleteObject();
   const deleteAllObjects = useDeleteAllObjects();
 
-  const toggleLoading = useCallback(
-    ({ shouldLoad }: { shouldLoad: boolean }) => {
-      setIsLoading(shouldLoad);
-    },
-    []
-  );
+  const errorHandler = useCallback(({ name, message }: S3ServiceException) => {
+    console.log({ name, message });
+    setNetworkError({ name, message });
+    setIsLoading(false);
+    setIsUploading(false);
+  }, []);
 
   // add support for abort controller
   const fetchFileContents = useCallback(
     ({ path }: { path: string }) => {
+      // setNetworkError(defaultContext.networkError);
       setIsLoading(true);
       return getObject({ key: path })
         .then((r) => r.Body?.transformToString())
         .then((v) => {
           setIsLoading(false);
+          setNetworkError(defaultContext.networkError);
           setFileContents(v || "no data");
 
           const pathSeparatorIndex = path.indexOf("#");
@@ -144,9 +153,11 @@ export const FileContentsContextProvider = ({
 
   const fetchDirectoryContents = useCallback(
     ({ path }: { path: string }) => {
+      // setNetworkError(defaultContext.networkError);
       setIsLoading(true);
       return getAllObjects({ prefix: path }).then((r) => {
         setIsLoading(false);
+        setNetworkError(defaultContext.networkError);
         return r.Contents || [];
       });
     },
@@ -154,10 +165,11 @@ export const FileContentsContextProvider = ({
   );
 
   const fetchFileTree = useCallback(() => {
+    // setNetworkError(defaultContext.networkError);
     setIsLoading(true);
     getAllObjects().then((r) => {
-      console.log(r);
       setIsLoading(false);
+      setNetworkError(defaultContext.networkError);
       setObjectKeys(r.Contents);
     });
   }, [getAllObjects]);
@@ -172,11 +184,13 @@ export const FileContentsContextProvider = ({
       fileName: string;
       content: string;
     }) => {
+      // setNetworkError(defaultContext.networkError);
       setIsUploading(true);
       return putObject({ key: `${path}/${fileName}`, content }).then(() => {
         setIsUploading(false);
         setIsNewFileInputVisible(false);
         setIsNewDirectoryInputVisible(false);
+        setNetworkError(defaultContext.networkError);
         onCloseInputCallback();
       });
     },
@@ -185,12 +199,14 @@ export const FileContentsContextProvider = ({
 
   const createDirectory = useCallback(
     ({ path, directoryName }: { path: string; directoryName: string }) => {
+      // setNetworkError(defaultContext.networkError);
       setIsUploading(true);
       const key = `${path}/${directoryName}`;
       return putObject({ key, content: "" }).then(() => {
         setIsUploading(false);
         setIsNewFileInputVisible(false);
         setIsNewDirectoryInputVisible(false);
+        setNetworkError(defaultContext.networkError);
         onCloseInputCallback();
       });
     },
@@ -199,9 +215,29 @@ export const FileContentsContextProvider = ({
 
   const deleteDirectory = useCallback(
     ({ paths }: { paths: string[] }) => {
-      return deleteAllObjects({ keys: paths }).then((r) => r.Deleted);
+      setIsLoading(true);
+      return deleteAllObjects({ keys: paths })
+        .then((r) => {
+          setIsLoading(false);
+          setNetworkError(defaultContext.networkError);
+          return r.Deleted;
+        })
+        .catch(errorHandler);
     },
-    [deleteAllObjects]
+    [deleteAllObjects, errorHandler]
+  );
+
+  const deleteFile = useCallback(
+    ({ path }: { path: string }) => {
+      setIsLoading(true);
+      return deleteObject({ key: path }).then((r) => {
+        setIsLoading(false);
+        setNetworkError(defaultContext.networkError);
+        return r.DeleteMarker;
+      }, errorHandler);
+      // .catch();
+    },
+    [deleteObject, errorHandler]
   );
 
   const showNewDirectoryInput = useCallback(
@@ -210,8 +246,9 @@ export const FileContentsContextProvider = ({
       setIsNewFileInputVisible(false);
       setSelectedPath(path);
       setIsNewDirectoryInputVisible(true);
-      setDisplayPath("");
-      setFileContents("");
+      setNetworkError(defaultContext.networkError);
+      setDisplayPath(defaultContext.displayPath);
+      setFileContents(defaultContext.fileContents);
     },
     []
   );
@@ -222,8 +259,9 @@ export const FileContentsContextProvider = ({
       setIsNewDirectoryInputVisible(false);
       setSelectedPath(path);
       setIsNewFileInputVisible(true);
-      setDisplayPath("");
-      setFileContents("");
+      setNetworkError(defaultContext.networkError);
+      setDisplayPath(defaultContext.displayPath);
+      setFileContents(defaultContext.fileContents);
     },
     []
   );
@@ -234,7 +272,6 @@ export const FileContentsContextProvider = ({
         fileContents,
         fetchFileContents,
         isLoading,
-        toggleLoading,
         objectKeys,
         fetchFileTree,
         isUploading,
@@ -246,6 +283,7 @@ export const FileContentsContextProvider = ({
         },
         createDirectory,
         deleteDirectory,
+        deleteFile,
         fetchDirectoryContents,
         isNewDirectoryInputVisible,
         showNewDirectoryInput,
@@ -253,6 +291,7 @@ export const FileContentsContextProvider = ({
         showNewFileInput,
         selectedPath,
         displayPath,
+        networkError,
       }}
     >
       {children}

@@ -1,7 +1,6 @@
 import { useCallback, useContext, useState } from "react";
 
 import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
-import { useDeleteObject } from "@src/hooks/useDeleteObject";
 import { RawObj } from "../TreeView/TreeView";
 
 import "./TreeNode.css";
@@ -28,14 +27,13 @@ export const TreeNode = ({
   const [isEmpty, setIsEmpty] = useState(false);
   const [directoryContents, setDirectoryContents] = useState<RawObj[]>([]);
   const {
-    toggleLoading,
     fetchFileContents,
     fetchDirectoryContents,
     deleteDirectory,
+    deleteFile,
     showNewFileInput,
     showNewDirectoryInput,
   } = useContext(FileContentsContext);
-  const deleteObject = useDeleteObject();
 
   const pathSeparatorIndex = path.indexOf("#");
   const depth = parseInt(path.slice(0, pathSeparatorIndex));
@@ -109,7 +107,6 @@ export const TreeNode = ({
                       // deleting only if there are no other directories inside
                       // the reason is that if we start drilling recursively, we could end up with a
                       // network congestion of requests just to gather all child keys
-                      toggleLoading({ shouldLoad: true });
                       deleteDirectory({
                         paths: directoryContents
                           .map((dc) => dc.key)
@@ -139,8 +136,7 @@ export const TreeNode = ({
           <button
             data-deleter
             onClick={() => {
-              toggleLoading({ shouldLoad: true });
-              deleteObject({ key: path }).then(() => onDelete());
+              deleteFile({ path }).then(onDelete);
             }}
           >
             <i className="gg-trash"></i>

@@ -55,10 +55,24 @@ export const TreeView = () => {
             })}
           </ul>
           <div data-root-actions>
-            <button onClick={() => showNewFileInput({ path: "0#" })}>
+            <button
+              onClick={() =>
+                showNewFileInput({
+                  path: "0#",
+                  onClose: refreshDirectoryContents,
+                })
+              }
+            >
               <i className="gg-file-add"></i>
             </button>
-            <button onClick={() => showNewDirectoryInput({ path: "0#" })}>
+            <button
+              onClick={() =>
+                showNewDirectoryInput({
+                  path: "0#",
+                  onClose: refreshDirectoryContents,
+                })
+              }
+            >
               <i className="gg-folder-add"></i>
             </button>
           </div>
