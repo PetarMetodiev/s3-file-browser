@@ -77,7 +77,6 @@ type FileContentsContextType = {
     onClose: () => void; // possibly return the reason for closing the input
   }) => void;
   currentDirectory: NodeProps["path"];
-  // directoryContentsCache: RawObj[];
   currentFile: string;
   networkError: { name: string; message: string };
 };
@@ -96,8 +95,7 @@ const defaultContext: FileContentsContextType = {
   showNewDirectoryInput: noop,
   isNewFileInputVisible: false,
   showNewFileInput: noop,
-  currentDirectory: "" as typeof rootPath,
-  // directoryContentsCache: [],
+  currentDirectory: "invalid" as typeof rootPath,
   currentFile: rootPath,
   networkError: { name: "", message: "" },
 };
@@ -142,7 +140,6 @@ export const FileContentsContextProvider = ({
       setNetworkError({ name, message });
       setIsLoading(false);
       logout();
-      console.log({ name, message });
       throw { name, message };
     },
     [logout]
@@ -180,13 +177,10 @@ export const FileContentsContextProvider = ({
     }) => {
       setIsLoading(true);
       if (currentDirectory === path) {
-        console.log("cache");
         return Promise.resolve(directoryContentsCache);
       }
       return getAllObjects({ prefix: path })
         .then((r) => {
-          console.log("fetching...");
-
           setIsLoading(false);
           setNetworkError(defaultContext.networkError);
 
