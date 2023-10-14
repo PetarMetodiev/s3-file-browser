@@ -18,6 +18,7 @@ import { usePutObject } from "@src/hooks/usePutObject";
 
 import { directoryLevelSeparator } from "@src/utils/consts";
 import { noop } from "@src/utils/noop";
+import { CredentialsContext } from "./S3CredentialsContextProvider";
 
 type FileContentsContextType = {
   isLoading: boolean;
@@ -99,6 +100,8 @@ export const FileContentsContext =
 export const FileContentsContextProvider = ({
   children,
 }: PropsWithChildren) => {
+  const { updateCredentials } = useContext(CredentialsContext);
+
   const [isLoading, setIsLoading] = useState(defaultContext.isLoading);
   const [fileContents, setFileContents] = useState(defaultContext.fileContents);
   const [isUploading, setIsUploading] = useState(defaultContext.isUploading);
@@ -121,11 +124,16 @@ export const FileContentsContextProvider = ({
   const deleteAllObjects = useDeleteAllObjects();
 
   const errorHandler = useCallback(({ name, message }: S3ServiceException) => {
-    console.log({ name, message });
     setNetworkError({ name, message });
     setIsLoading(false);
     setIsUploading(false);
-  }, []);
+    updateCredentials({
+      accessKeyId:"",
+      bucket: "",
+      region: "",
+      secretAccessKey: ""
+    })
+  }, [updateCredentials]);
 
   // add support for abort controller
   const fetchFileContents = useCallback(
@@ -138,14 +146,14 @@ export const FileContentsContextProvider = ({
           setNetworkError(defaultContext.networkError);
           setFileContents(v || "no data");
 
-          const pathSeparatorIndex = path.indexOf("#");
+          const pathSeparatorIndex = path.indexOf(directoryLevelSeparator);
           setDisplayPath(`${path.slice(pathSeparatorIndex + 1)}`);
           setIsNewFileInputVisible(false);
           setIsNewDirectoryInputVisible(false);
           return v;
-        });
+        }).catch(errorHandler);
     },
-    [getObject]
+    [getObject, errorHandler]
   );
 
   const fetchDirectoryContents = useCallback(
@@ -155,9 +163,9 @@ export const FileContentsContextProvider = ({
         setIsLoading(false);
         setNetworkError(defaultContext.networkError);
         return r.Contents || [];
-      });
+      }).catch(errorHandler);
     },
-    [getAllObjects]
+    [getAllObjects,errorHandler]
   );
 
   const uploadFile = useCallback(
@@ -177,9 +185,9 @@ export const FileContentsContextProvider = ({
         setIsNewDirectoryInputVisible(false);
         setNetworkError(defaultContext.networkError);
         onCloseInputCallback();
-      });
+      }).catch(errorHandler);
     },
-    [putObject, onCloseInputCallback]
+    [putObject, onCloseInputCallback, errorHandler]
   );
 
   const createDirectory = useCallback(
@@ -192,9 +200,9 @@ export const FileContentsContextProvider = ({
         setIsNewDirectoryInputVisible(false);
         setNetworkError(defaultContext.networkError);
         onCloseInputCallback();
-      });
+      }).catch(errorHandler);
     },
-    [putObject, onCloseInputCallback]
+    [putObject, onCloseInputCallback, errorHandler]
   );
 
   const deleteDirectory = useCallback(
