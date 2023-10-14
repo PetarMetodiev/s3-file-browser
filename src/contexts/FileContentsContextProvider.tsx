@@ -16,7 +16,7 @@ import { useGetAllObjects } from "@src/hooks/useGetAllObjects";
 import { useGetObject } from "@src/hooks/useGetObject";
 import { usePutObject } from "@src/hooks/usePutObject";
 
-import { directoryLevelSeparator } from "@src/utils/consts";
+import { directoryLevelSeparator, rootPath } from "@src/utils/consts";
 import { noop } from "@src/utils/noop";
 import { S3CredentialsContext } from "./S3CredentialsContextProvider";
 import { NodeProps } from "@src/components/TreeView/TreeNode/TreeNode";
@@ -76,7 +76,7 @@ type FileContentsContextType = {
   selectedPath: NodeProps["path"];
   displayPath: string;
   networkError: { name: string; message: string };
-  currentDirectory: `${number}${typeof directoryLevelSeparator}/${string}`;
+  currentDirectory: NodeProps["path"];
   selectCurrentDirectory: ({ path }: { path: NodeProps["path"] }) => void;
 };
 
@@ -94,8 +94,8 @@ const defaultContext: FileContentsContextType = {
   showNewDirectoryInput: noop,
   isNewFileInputVisible: false,
   showNewFileInput: noop,
-  selectedPath: "",
-  displayPath: "",
+  selectedPath: rootPath,
+  displayPath: rootPath,
   networkError: { name: "", message: "" },
 };
 

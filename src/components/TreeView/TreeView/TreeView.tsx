@@ -70,7 +70,7 @@ export const TreeView = () => {
               <button
                 onClick={() =>
                   showNewFileInput({
-                    path: "0#",
+                    path: rootPath,
                     onClose: refreshDirectoryContents,
                   })
                 }
@@ -80,7 +80,7 @@ export const TreeView = () => {
               <button
                 onClick={() =>
                   showNewDirectoryInput({
-                    path: "0#",
+                    path: rootPath,
                     onClose: refreshDirectoryContents,
                   })
                 }
@@ -97,7 +97,7 @@ export const TreeView = () => {
           <Button
             onClick={() =>
               showNewDirectoryInput({
-                path: "0#",
+                path: rootPath,
                 onClose: refreshDirectoryContents,
               })
             }
@@ -108,7 +108,7 @@ export const TreeView = () => {
           <Button
             onClick={() =>
               showNewFileInput({
-                path: "0#",
+                path: rootPath,
                 onClose: refreshDirectoryContents,
               })
             }
