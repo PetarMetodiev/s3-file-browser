@@ -30,18 +30,21 @@ export const TreeView = ({ className }: TreeViewProps) => {
   const [paths, setPaths] = useState<RawObj[] | undefined>();
   const [emptyBucket, setEmptyBucket] = useState(false);
 
-  const refreshDirectoryContents = useCallback(() => {
-    fetchDirectoryContents({ path: rootPath })
-      .then((r) => {
-        setPaths(r);
-        setEmptyBucket(!r || r.length === 0);
-      })
-      .catch();
-  }, [fetchDirectoryContents]);
+  const refreshDirectoryContents = useCallback(
+    ({ setAsCurrent }: { setAsCurrent: boolean } = { setAsCurrent: false }) => {
+      fetchDirectoryContents({ path: rootPath, setAsCurrent })
+        .then((r) => {
+          setPaths(r);
+          setEmptyBucket(!r || r.length === 0);
+        })
+        .catch();
+    },
+    [fetchDirectoryContents]
+  );
 
   useEffect(() => {
-    refreshDirectoryContents();
-  }, [refreshDirectoryContents]);
+    refreshDirectoryContents({ setAsCurrent: true });
+  }, []);
 
   return (
     <div className={`tree-view-inner ${className || ""}`}>
