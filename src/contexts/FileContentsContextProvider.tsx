@@ -29,7 +29,6 @@ type FileContentsContextType = {
   }: {
     path: NodeProps["path"];
   }) => Promise<string | undefined>;
-  isUploading: boolean;
   uploadFile: ({
     content,
     fileName,
@@ -85,7 +84,6 @@ const defaultContext: FileContentsContextType = {
   isLoading: true,
   fileContents: "",
   fetchFileContents: () => Promise.resolve(""),
-  isUploading: false,
   uploadFile: () => Promise.resolve(),
   deleteAllObjects: noop,
   createDirectory: () => Promise.resolve(),
@@ -111,7 +109,6 @@ export const FileContentsContextProvider = ({
 
   const [isLoading, setIsLoading] = useState(defaultContext.isLoading);
   const [fileContents, setFileContents] = useState(defaultContext.fileContents);
-  const [isUploading, setIsUploading] = useState(defaultContext.isUploading);
   const [isNewFileInputVisible, setIsNewFileInputVisible] = useState(
     defaultContext.isNewFileInputVisible
   );
@@ -134,7 +131,6 @@ export const FileContentsContextProvider = ({
     ({ name, message }: S3ServiceException) => {
       setNetworkError({ name, message });
       setIsLoading(false);
-      setIsUploading(false);
       logout();
       console.log({ name, message });
       throw { name, message };
@@ -190,10 +186,8 @@ export const FileContentsContextProvider = ({
       fileName: string;
       content: string;
     }) => {
-      setIsUploading(true);
       return putObject({ key: `${path}/${fileName}`, content })
         .then(() => {
-          setIsUploading(false);
           setIsNewFileInputVisible(false);
           setIsNewDirectoryInputVisible(false);
           setNetworkError(defaultContext.networkError);
@@ -215,7 +209,6 @@ export const FileContentsContextProvider = ({
       const key = `${path}/${directoryName}`;
       return putObject({ key, content: "" })
         .then(() => {
-          setIsUploading(false);
           setIsNewFileInputVisible(false);
           setIsNewDirectoryInputVisible(false);
           setNetworkError(defaultContext.networkError);
@@ -286,7 +279,6 @@ export const FileContentsContextProvider = ({
         fileContents,
         fetchFileContents,
         isLoading,
-        isUploading,
         uploadFile,
         deleteAllObjects: () => {
           getAllObjects()
