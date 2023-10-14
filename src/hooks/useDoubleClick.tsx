@@ -1,14 +1,13 @@
 import { MouseEvent, MouseEventHandler, useCallback, useRef } from "react";
 
 export const useDoubleClick = <T,>({
-  doubleClick,
-  click,
-  timeout = 200,
+  onClick,
+  onDoubleClick,
 }: {
-  doubleClick: MouseEventHandler<T>;
-  click: MouseEventHandler<T>;
-  timeout: number;
+  onDoubleClick: MouseEventHandler<T>;
+  onClick: MouseEventHandler<T>;
 }) => {
+  const timeout = 200;
   const clickTimeout = useRef<ReturnType<typeof setTimeout>>();
 
   const clearClickTimeout = () => {
@@ -21,15 +20,15 @@ export const useDoubleClick = <T,>({
   return useCallback(
     (event: MouseEvent<T>) => {
       clearClickTimeout();
-      if (click && event.detail === 1) {
+      if (onClick && event.detail === 1) {
         clickTimeout.current = setTimeout(() => {
-          click(event);
+          onClick(event);
         }, timeout);
       }
       if (event.detail % 2 === 0) {
-        doubleClick(event);
+        onDoubleClick(event);
       }
     },
-    [click, doubleClick]
+    [onClick, onDoubleClick]
   );
 };
