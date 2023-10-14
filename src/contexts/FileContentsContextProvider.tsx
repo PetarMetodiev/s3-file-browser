@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 
-import { S3ServiceException, _Object } from "@aws-sdk/client-s3";
+import { S3ServiceException } from "@aws-sdk/client-s3";
 
 import {
   useDeleteAllObjects,
@@ -20,6 +20,7 @@ import { directoryLevelSeparator, rootPath } from "@src/utils/consts";
 import { noop } from "@src/utils/noop";
 import { S3CredentialsContext } from "./S3CredentialsContextProvider";
 import { NodeProps } from "@src/components/TreeView/TreeNode/TreeNode";
+import { RawObj } from "@src/components/TreeView/TreeView/TreeView";
 
 type FileContentsContextType = {
   isLoading: boolean;
@@ -54,9 +55,11 @@ type FileContentsContextType = {
   deleteFile: ({ path }: { path: NodeProps["path"] }) => Promise<unknown>;
   fetchDirectoryContents: ({
     path,
+    setAsCurrent,
   }: {
     path: NodeProps["path"];
-  }) => Promise<(_Object & { Key?: NodeProps["path"] })[] | []>;
+    setAsCurrent?: boolean;
+  }) => Promise<RawObj[]>;
   isNewDirectoryInputVisible: boolean;
   showNewDirectoryInput: ({
     path,
@@ -73,11 +76,10 @@ type FileContentsContextType = {
     path: NodeProps["path"];
     onClose: () => void; // possibly return the reason for closing the input
   }) => void;
-  selectedPath: NodeProps["path"];
-  displayPath: string;
-  networkError: { name: string; message: string };
   currentDirectory: NodeProps["path"];
-  selectCurrentDirectory: ({ path }: { path: NodeProps["path"] }) => void;
+  // directoryContentsCache: RawObj[];
+  currentFile: string;
+  networkError: { name: string; message: string };
 };
 
 const defaultContext: FileContentsContextType = {
@@ -94,8 +96,9 @@ const defaultContext: FileContentsContextType = {
   showNewDirectoryInput: noop,
   isNewFileInputVisible: false,
   showNewFileInput: noop,
-  selectedPath: rootPath,
-  displayPath: rootPath,
+  currentDirectory: "" as typeof rootPath,
+  // directoryContentsCache: [],
+  currentFile: rootPath,
   networkError: { name: "", message: "" },
 };
 
@@ -108,6 +111,7 @@ export const FileContentsContextProvider = ({
   const { logout } = useContext(S3CredentialsContext);
 
   const [isLoading, setIsLoading] = useState(defaultContext.isLoading);
+
   const [fileContents, setFileContents] = useState(defaultContext.fileContents);
   const [isNewFileInputVisible, setIsNewFileInputVisible] = useState(
     defaultContext.isNewFileInputVisible
@@ -115,8 +119,14 @@ export const FileContentsContextProvider = ({
   const [isNewDirectoryInputVisible, setIsNewDirectoryInputVisible] = useState(
     defaultContext.isNewDirectoryInputVisible
   );
-  const [selectedPath, setSelectedPath] = useState(defaultContext.selectedPath);
-  const [displayPath, setDisplayPath] = useState(defaultContext.displayPath);
+  const [currentDirectory, setCurrentDirectory] = useState(
+    defaultContext.currentDirectory
+  );
+  const [currentFile, setCurrentFile] = useState(defaultContext.currentFile);
+  const [directoryContentsCache, setDirectoryContentsCache] = useState<
+    RawObj[]
+  >([]);
+
   const [networkError, setNetworkError] = useState(defaultContext.networkError);
 
   const [onCloseInputCallback, setOnCloseInputCallback] = useState(() => noop);
@@ -150,7 +160,7 @@ export const FileContentsContextProvider = ({
           setFileContents(v || "no data");
 
           const pathSeparatorIndex = path.indexOf(directoryLevelSeparator);
-          setDisplayPath(`${path.slice(pathSeparatorIndex + 1)}`);
+          setCurrentFile(`${path.slice(pathSeparatorIndex + 1)}`);
           setIsNewFileInputVisible(false);
           setIsNewDirectoryInputVisible(false);
           return v;
@@ -161,19 +171,45 @@ export const FileContentsContextProvider = ({
   );
 
   const fetchDirectoryContents = useCallback(
-    ({ path }: { path: NodeProps["path"] }) => {
+    ({
+      path,
+      setAsCurrent,
+    }: {
+      path: NodeProps["path"];
+      setAsCurrent?: boolean;
+    }) => {
       setIsLoading(true);
+      if (currentDirectory === path) {
+        console.log("cache");
+        return Promise.resolve(directoryContentsCache);
+      }
       return getAllObjects({ prefix: path })
         .then((r) => {
           console.log("fetching...");
+
           setIsLoading(false);
           setNetworkError(defaultContext.networkError);
-          return (r.Contents || []) as
-            | (_Object & { Key?: NodeProps["path"] })[];
+
+          return (r.Contents || [])
+            .map(
+              (o) =>
+                ({
+                  key: o.Key,
+                  isDir: o.Size === 0,
+                } as RawObj)
+            )
+            .sort((a, b) => Number(b.isDir) - Number(a.isDir));
+        })
+        .then((contents) => {
+          if (setAsCurrent) {
+            setDirectoryContentsCache(contents);
+            setCurrentDirectory(path);
+          }
+          return contents;
         })
         .catch(errorHandler);
     },
-    [getAllObjects, errorHandler]
+    [getAllObjects, errorHandler, currentDirectory, directoryContentsCache]
   );
 
   const uploadFile = useCallback(
@@ -191,6 +227,7 @@ export const FileContentsContextProvider = ({
           setIsNewFileInputVisible(false);
           setIsNewDirectoryInputVisible(false);
           setNetworkError(defaultContext.networkError);
+          setDirectoryContentsCache([]);
           onCloseInputCallback();
         })
         .catch(errorHandler);
@@ -212,6 +249,7 @@ export const FileContentsContextProvider = ({
           setIsNewFileInputVisible(false);
           setIsNewDirectoryInputVisible(false);
           setNetworkError(defaultContext.networkError);
+          setDirectoryContentsCache([]);
           onCloseInputCallback();
         })
         .catch(errorHandler);
@@ -226,6 +264,7 @@ export const FileContentsContextProvider = ({
         .then((r) => {
           setIsLoading(false);
           setNetworkError(defaultContext.networkError);
+          setDirectoryContentsCache([]);
           return r.Deleted;
         })
         .catch(errorHandler);
@@ -240,6 +279,7 @@ export const FileContentsContextProvider = ({
         .then((r) => {
           setIsLoading(false);
           setNetworkError(defaultContext.networkError);
+          setDirectoryContentsCache([]);
           return r.DeleteMarker;
         })
         .catch(errorHandler);
@@ -251,10 +291,10 @@ export const FileContentsContextProvider = ({
     ({ path, onClose }: { path: NodeProps["path"]; onClose: () => void }) => {
       setOnCloseInputCallback(() => onClose);
       setIsNewFileInputVisible(false);
-      setSelectedPath(path);
+      setCurrentDirectory(path);
       setIsNewDirectoryInputVisible(true);
       setNetworkError(defaultContext.networkError);
-      setDisplayPath(defaultContext.displayPath);
+      setCurrentFile(defaultContext.currentFile);
       setFileContents(defaultContext.fileContents);
     },
     []
@@ -264,10 +304,10 @@ export const FileContentsContextProvider = ({
     ({ path, onClose }: { path: NodeProps["path"]; onClose: () => void }) => {
       setOnCloseInputCallback(() => onClose);
       setIsNewDirectoryInputVisible(false);
-      setSelectedPath(path);
+      setCurrentDirectory(path);
       setIsNewFileInputVisible(true);
       setNetworkError(defaultContext.networkError);
-      setDisplayPath(defaultContext.displayPath);
+      setCurrentFile(defaultContext.currentFile);
       setFileContents(defaultContext.fileContents);
     },
     []
@@ -293,9 +333,13 @@ export const FileContentsContextProvider = ({
         showNewDirectoryInput,
         isNewFileInputVisible,
         showNewFileInput,
-        selectedPath,
-        displayPath,
+        // current directory path
+        currentDirectory,
+        // current file path
+        currentFile,
         networkError,
+        // currentDirectory,
+        // selectCurrentDirectory,
       }}
     >
       {children}

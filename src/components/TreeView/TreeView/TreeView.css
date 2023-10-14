@@ -12,10 +12,6 @@
     }
   }
 
-  & [data-nodes-container] {
-    list-style-type: none;
-  }
-
   & [data-root-actions] {
     display: flex;
     justify-content: space-around;

@@ -31,16 +31,10 @@ export const TreeView = ({ className }: TreeViewProps) => {
   const [emptyBucket, setEmptyBucket] = useState(false);
 
   const refreshDirectoryContents = useCallback(() => {
-    fetchDirectoryContents({ path: "0#/" })
+    fetchDirectoryContents({ path: rootPath })
       .then((r) => {
-        const ps: RawObj[] | undefined = r
-          .map((o) => ({
-            key: o.Key as RawObj["key"],
-            isDir: o.Size === 0,
-          }))
-          .sort((a, b) => Number(b.isDir) - Number(a.isDir));
-        setPaths(ps);
-        setEmptyBucket(!ps || ps.length === 0);
+        setPaths(r);
+        setEmptyBucket(!r || r.length === 0);
       })
       .catch();
   }, [fetchDirectoryContents]);
