@@ -3,6 +3,27 @@
   padding-left: 1rem;
   white-space: nowrap;
 
+  &[data-tile="true"] {
+    border: none;
+
+    &:hover .leaf-node [data-deleter] {
+      /* Show the delete icon eventually */
+      display: none;
+    }
+
+    & [data-expander],
+    & [data-fetcher] {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      place-items: center;
+    }
+
+    & i[class^="gg"] {
+      --ggs: 2;
+    }
+  }
+
   & button {
     border: none;
     background: transparent;
@@ -20,7 +41,6 @@
   }
 
   & [data-empty-text] {
-    /* color: var(--accent); */
     margin-left: 1rem;
     opacity: 0.3;
   }
