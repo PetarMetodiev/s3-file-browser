@@ -14,7 +14,6 @@ export const FilePreview = () => {
     uploadFile,
     selectedPath,
     displayPath,
-    networkError,
   } = useContext(FileContentsContext);
 
   const [newDirectory, setNewDirectory] = useState("");
@@ -26,12 +25,9 @@ export const FilePreview = () => {
   const [displayMessage, setDisplayMessage] = useState("");
 
   useEffect(() => {
-    console.log(networkError);
     if (!isNewFileInputVisible && !isNewDirectoryInputVisible) {
       if (isLoading) {
         setDisplayMessage("Loading...");
-      } else if (networkError.name || networkError.message) {
-        setDisplayMessage(`${networkError.name}: ${networkError.message}`);
       } else if (fileContents) {
         setDisplayMessage(fileContents);
       } else {
@@ -41,7 +37,6 @@ export const FilePreview = () => {
   }, [
     isNewFileInputVisible,
     isNewDirectoryInputVisible,
-    networkError,
     isLoading,
     fileContents,
   ]);
