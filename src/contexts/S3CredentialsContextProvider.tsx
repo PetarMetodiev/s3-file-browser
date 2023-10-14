@@ -41,9 +41,13 @@ export const CredentialsContext = createContext<
   CredentialsContextType & Credentials
 >(defaultContext);
 
-export const CredentialsContextProvider = ({ children }: PropsWithChildren) => {
+export const S3CredentialsContextProvider = ({
+  children,
+}: PropsWithChildren) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [s3Client, setS3Client] = useState<S3Client | null>(defaultContext.client);
+  const [s3Client, setS3Client] = useState<S3Client | null>(
+    defaultContext.client
+  );
 
   const [bucket, setBucket] = useState(defaultContext.bucket);
   const [region, setRegion] = useState(defaultContext.region);
@@ -60,14 +64,7 @@ export const CredentialsContextProvider = ({ children }: PropsWithChildren) => {
     setIsAuthenticated(
       !!bucket && !!region && !!accessKeyId && !!secretAccessKey
     );
-  }, [
-    bucket,
-    region,
-    accessKeyId,
-    secretAccessKey,
-    // setS3Client,
-    setIsAuthenticated,
-  ]);
+  }, [bucket, region, accessKeyId, secretAccessKey, setIsAuthenticated]);
 
   const updateCredentials = useCallback(
     ({ accessKeyId, bucket, region, secretAccessKey }: Credentials) => {
