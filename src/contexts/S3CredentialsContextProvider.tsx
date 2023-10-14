@@ -25,22 +25,22 @@ const defaultContext = {
   secretAccessKey: localStorage.getItem(secretAccessKeyLS) || "",
 };
 
-type CredentialsContextType = {
-  updateCredentials: (credentials: Credentials) => void;
+type S3CredentialsContextType = {
+  updateCredentials: (credentials: S3Credentials) => void;
   logout: () => void;
   isAuthenticated: boolean;
   client: S3Client | null;
 };
 
-export type Credentials = {
+export type S3Credentials = {
   bucket: string;
   region: string;
   accessKeyId: string;
   secretAccessKey: string;
 };
 
-export const CredentialsContext = createContext<
-  CredentialsContextType & Credentials
+export const S3CredentialsContext = createContext<
+  S3CredentialsContextType & S3Credentials
 >(defaultContext);
 
 export const S3CredentialsContextProvider = ({
@@ -69,7 +69,7 @@ export const S3CredentialsContextProvider = ({
   }, [bucket, region, accessKeyId, secretAccessKey, setIsAuthenticated]);
 
   const updateCredentials = useCallback(
-    ({ accessKeyId, bucket, region, secretAccessKey }: Credentials) => {
+    ({ accessKeyId, bucket, region, secretAccessKey }: S3Credentials) => {
       setBucket(bucket);
       localStorage.setItem(bucketLS, bucket);
       setRegion(region);
@@ -95,7 +95,7 @@ export const S3CredentialsContextProvider = ({
   useEffect(() => setAuthentication(), [setAuthentication]);
 
   return (
-    <CredentialsContext.Provider
+    <S3CredentialsContext.Provider
       value={{
         isAuthenticated,
         client: s3Client,
@@ -108,6 +108,6 @@ export const S3CredentialsContextProvider = ({
       }}
     >
       {children}
-    </CredentialsContext.Provider>
+    </S3CredentialsContext.Provider>
   );
 };

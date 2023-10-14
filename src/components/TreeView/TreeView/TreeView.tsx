@@ -7,7 +7,7 @@ import { Button } from "@src/components/Button/Button";
 import "./TreeView.css";
 import "css.gg/icons/css/file-add.css";
 import "css.gg/icons/css/folder-add.css";
-import { CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
+import { S3CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
 
 export type RawObj = {
   key?: string;
@@ -21,7 +21,7 @@ export const TreeView = () => {
     showNewDirectoryInput,
     isLoading,
   } = useContext(FileContentsContext);
-  const { logout } = useContext(CredentialsContext);
+  const { logout } = useContext(S3CredentialsContext);
   const [paths, setPaths] = useState<RawObj[] | undefined>();
   const [emptyBucket, setEmptyBucket] = useState(false);
 

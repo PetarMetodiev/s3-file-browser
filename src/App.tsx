@@ -3,16 +3,16 @@ import "./App.css";
 
 import { CredentialsForm } from "./components/CredentialsForm/CredentialsForm";
 import {
-  Credentials,
-  CredentialsContext,
+  S3Credentials,
+  S3CredentialsContext,
 } from "./contexts/S3CredentialsContextProvider";
 import { FileContentsContextProvider } from "./contexts/FileContentsContextProvider";
 import { FileExplorer } from "./components/FileExplorer/FileExplorer";
 
 function App() {
-  const { updateCredentials, isAuthenticated } = useContext(CredentialsContext);
+  const { updateCredentials, isAuthenticated } = useContext(S3CredentialsContext);
 
-  const submitCredentials = (credentials: Credentials) => {
+  const submitCredentials = (credentials: S3Credentials) => {
     updateCredentials(credentials);
   };
 

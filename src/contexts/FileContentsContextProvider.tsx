@@ -18,7 +18,7 @@ import { usePutObject } from "@src/hooks/usePutObject";
 
 import { directoryLevelSeparator } from "@src/utils/consts";
 import { noop } from "@src/utils/noop";
-import { CredentialsContext } from "./S3CredentialsContextProvider";
+import { S3CredentialsContext } from "./S3CredentialsContextProvider";
 
 type FileContentsContextType = {
   isLoading: boolean;
@@ -100,7 +100,7 @@ export const FileContentsContext =
 export const FileContentsContextProvider = ({
   children,
 }: PropsWithChildren) => {
-  const { logout } = useContext(CredentialsContext);
+  const { logout } = useContext(S3CredentialsContext);
 
   const [isLoading, setIsLoading] = useState(defaultContext.isLoading);
   const [fileContents, setFileContents] = useState(defaultContext.fileContents);

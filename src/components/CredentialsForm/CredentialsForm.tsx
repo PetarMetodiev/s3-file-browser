@@ -2,12 +2,12 @@ import { FormEvent, useState } from "react";
 import { Input } from "../Input/Input";
 import { Button } from "..//Button/Button";
 
-import { Credentials } from "@contexts/S3CredentialsContextProvider";
+import { S3Credentials } from "@contexts/S3CredentialsContextProvider";
 
 import "./CredentialsForm.css";
 
 type CredentialsFormProps = {
-  onSubmit: (e: Credentials) => void;
+  onSubmit: (e: S3Credentials) => void;
   className?: string;
 };
 

@@ -5,7 +5,7 @@ import {
   DeleteObjectsCommand,
   DeleteObjectsCommandOutput,
 } from "@aws-sdk/client-s3";
-import { CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
+import { S3CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
 import { useCallback, useContext } from "react";
 
 type DeleteObjectCommandParameters = {
@@ -26,7 +26,7 @@ const makeDeleteObjectCommand = ({
 };
 
 export const useDeleteObject = () => {
-  const { bucket, client } = useContext(CredentialsContext);
+  const { bucket, client } = useContext(S3CredentialsContext);
 
   const commandCB = useCallback(
     ({ key }: { key: DeleteObjectCommandParameters["key"] }) => {
@@ -43,7 +43,7 @@ export const useDeleteObject = () => {
 };
 
 export const useDeleteAllObjects = () => {
-  const { bucket, client } = useContext(CredentialsContext);
+  const { bucket, client } = useContext(S3CredentialsContext);
 
   return useCallback(
     ({ keys }: { keys: string[] } = { keys: [] }) => {

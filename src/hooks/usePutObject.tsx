@@ -6,7 +6,7 @@ import {
   PutObjectCommandInput,
   PutObjectCommandOutput,
 } from "@aws-sdk/client-s3";
-import { CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
+import { S3CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
 import { useCallback, useContext } from "react";
 
 type PutObjectCommandParameters = {
@@ -30,7 +30,7 @@ const makePutObjectCommand = ({
 };
 
 export const usePutObject = () => {
-  const { bucket, client } = useContext(CredentialsContext);
+  const { bucket, client } = useContext(S3CredentialsContext);
 
   const commandCB = useCallback(
     ({
