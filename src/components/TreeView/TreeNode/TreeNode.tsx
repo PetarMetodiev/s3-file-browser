@@ -9,6 +9,7 @@ import "css.gg/icons/css/folder-remove.css";
 import "css.gg/icons/css/file-document.css";
 import "css.gg/icons/css/trash.css";
 import "css.gg/icons/css/file-add.css";
+import { directoryLevelSeparator } from "@src/utils/consts";
 
 type NodeProps = {
   nodeName: string;
@@ -35,9 +36,11 @@ export const TreeNode = ({
     showNewDirectoryInput,
   } = useContext(FileContentsContext);
 
-  const pathSeparatorIndex = path.indexOf("#");
+  const pathSeparatorIndex = path.indexOf(directoryLevelSeparator);
   const depth = parseInt(path.slice(0, pathSeparatorIndex));
-  const pathBelow = `${depth + 1}#${path.slice(pathSeparatorIndex + 1)}`;
+  const pathBelow = `${depth + 1}${directoryLevelSeparator}${path.slice(
+    pathSeparatorIndex + 1
+  )}`;
 
   const refreshDirectoryContents = useCallback(() => {
     fetchDirectoryContents({ path: pathBelow }).then((r) => {

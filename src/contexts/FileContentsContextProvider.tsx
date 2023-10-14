@@ -1,4 +1,13 @@
+import {
+  PropsWithChildren,
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+} from "react";
+
 import { S3ServiceException, _Object } from "@aws-sdk/client-s3";
+
 import {
   useDeleteAllObjects,
   useDeleteObject,
@@ -6,15 +15,9 @@ import {
 import { useGetAllObjects } from "@src/hooks/useGetAllObjects";
 import { useGetObject } from "@src/hooks/useGetObject";
 import { usePutObject } from "@src/hooks/usePutObject";
-// import { TreeNode, toTree } from "@src/utils/convertToTreeStructure";
+
+import { directoryLevelSeparator } from "@src/utils/consts";
 import { noop } from "@src/utils/noop";
-import {
-  PropsWithChildren,
-  createContext,
-  useCallback,
-  // useEffect,
-  useState,
-} from "react";
 
 type FileContentsContextType = {
   isLoading: boolean;
