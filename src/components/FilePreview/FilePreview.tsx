@@ -3,7 +3,11 @@ import "./FilePreview.css";
 import { useContext, useEffect, useState } from "react";
 import { UploadContent } from "../UploadContent/UploadContent";
 
-export const FilePreview = () => {
+type FilePreviewProps = {
+  className?: string;
+};
+
+export const FilePreview = ({ className }: FilePreviewProps) => {
   const {
     fileContents,
     isLoading,
@@ -27,7 +31,7 @@ export const FilePreview = () => {
   }, [isLoading, fileContents]);
 
   return (
-    <div className="file-preview">
+    <div className={`file-preview-inner ${className || ""}`}>
       <div data-titlebar>{currentFile && `currentFile: ${currentFile}`}</div>
       <div data-titlebar>
         {currentDirectory && `selectedPath: ${currentDirectory}`}

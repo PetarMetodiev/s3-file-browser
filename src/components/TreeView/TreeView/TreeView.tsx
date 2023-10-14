@@ -15,7 +15,11 @@ export type RawObj = {
   isDir: boolean;
 };
 
-export const TreeView = () => {
+type TreeViewProps = {
+  className?: string;
+};
+
+export const TreeView = ({ className }: TreeViewProps) => {
   const {
     fetchDirectoryContents,
     showNewFileInput,
@@ -46,7 +50,7 @@ export const TreeView = () => {
   }, [refreshDirectoryContents]);
 
   return (
-    <div className="tree-view">
+    <div className={`tree-view-inner ${className || ""}`}>
       <div data-tree-container>
         {paths && paths.length > 0 && (
           <>

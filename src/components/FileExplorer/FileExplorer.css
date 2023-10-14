@@ -1,7 +1,24 @@
 .file-explorer {
   display: grid;
   grid-template-columns: minmax(10rem, 1fr) 4fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    "treeview currentdir"
+    "treeview fileprivew";
+
   & > * {
     border: 1px solid var(--accent);
+  }
+
+  & .tree-view {
+    grid-area: treeview;
+  }
+
+  & .current-directory {
+    grid-area: currentdir;
+  }
+
+  & .file-preview {
+    grid-area: fileprivew;
   }
 }

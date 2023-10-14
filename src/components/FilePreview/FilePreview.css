@@ -1,4 +1,4 @@
-.file-preview {
+.file-preview-inner {
   display: grid;
   place-items: center;
   grid-template-rows: min-content 1fr;
