@@ -1,0 +1,8 @@
+.upload-content {
+  padding: 1rem;
+  & form {
+    display: flex;
+    flex-direction: column;
+    flex-basis: max(35%, 70ch);
+  }
+}

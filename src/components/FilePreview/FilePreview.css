@@ -3,13 +3,4 @@
   place-items: center;
   grid-template-rows: min-content 1fr;
   grid-template-columns: 1fr;
-
-  & [data-main-content] {
-    padding: 1rem;
-    & form {
-      display: flex;
-      flex-direction: column;
-      flex-basis: max(35%, 70ch);
-    }
-  }
 }
