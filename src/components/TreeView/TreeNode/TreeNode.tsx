@@ -5,16 +5,19 @@ import { RawObj } from "../TreeView/TreeView";
 
 import "./TreeNode.css";
 import "css.gg/icons/css/folder-add.css";
+import "css.gg/icons/css/folder.css";
 import "css.gg/icons/css/folder-remove.css";
 import "css.gg/icons/css/file-document.css";
 import "css.gg/icons/css/trash.css";
 import "css.gg/icons/css/file-add.css";
 import { directoryLevelSeparator } from "@src/utils/consts";
+import { useDoubleClick } from "@src/hooks/useDoubleClick";
 
 export type NodeProps = {
   nodeName: string;
-  path:  `${number}${typeof directoryLevelSeparator}/${string}`;
+  path: `${number}${typeof directoryLevelSeparator}/${string}`;
   isDirectory: boolean;
+  isTile?: boolean;
   onDelete: () => void;
 };
 
@@ -22,6 +25,7 @@ export const TreeNode = ({
   nodeName,
   path,
   isDirectory,
+  isTile = false,
   onDelete,
 }: NodeProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -35,51 +39,59 @@ export const TreeNode = ({
     deleteFile,
     showNewFileInput,
     showNewDirectoryInput,
+    // currentDirectory,
+    // selectCurrentDirectory,
   } = useContext(FileContentsContext);
+
+  const handleClick = useDoubleClick({
+    onClick: () => {
+      if (isExpanded) {
+        setIsExpanded(false);
+      } else {
+        refreshDirectoryContents().then(() => setIsExpanded(true));
+      }
+    },
+    onDoubleClick: () => refreshDirectoryContents({ setAsCurrent: true }),
+  });
 
   const pathSeparatorIndex = path.indexOf(directoryLevelSeparator);
   const depth = parseInt(path.slice(0, pathSeparatorIndex));
   const pathBelow = `${depth + 1}${directoryLevelSeparator}${path.slice(
     pathSeparatorIndex + 1
-  )}` as any;
+  )}` as NodeProps["path"];
 
-  const refreshDirectoryContents = useCallback(() => {
-    fetchDirectoryContents({ path: pathBelow }).then((r) => {
-      setIsExpanded(true);
-      const ps: RawObj[] | undefined = r
-        .map((o) => ({
-          key: o.Key,
-          isDir: o.Size === 0,
-        }))
-        .sort((a, b) => Number(b.isDir) - Number(a.isDir));
-      setDirectoryContents(ps);
-      setIsEmpty(ps.length === 0);
-    });
-  }, [fetchDirectoryContents, pathBelow]);
+  const refreshDirectoryContents = useCallback(
+    ({ setAsCurrent }: { setAsCurrent: boolean } = { setAsCurrent: false }) => {
+      return fetchDirectoryContents({ path: pathBelow, setAsCurrent }).then(
+        (r) => {
+          // setIsExpanded(true);
+          setDirectoryContents(r);
+          setIsEmpty(r.length === 0);
+        }
+      );
+    },
+    [fetchDirectoryContents, pathBelow]
+  );
 
   return (
-    <li className="tree-node">
+    <li className="tree-node" data-tile={isTile}>
       {isDirectory ? (
         <div>
           <div data-directory>
             <button
               data-expander
-              onClick={() => {
-                if (isExpanded) {
-                  setIsExpanded(false);
-                  return;
-                }
-                refreshDirectoryContents();
+              onClick={(e) => {
+                handleClick(e);
               }}
             >
               {isExpanded ? (
                 <i className="gg-folder-remove"></i>
               ) : (
-                <i className="gg-folder-add"></i>
+                <i className={`gg-folder${isTile ? "" : "-add"}`}></i>
               )}{" "}
               {nodeName}/
             </button>
-            {isExpanded && (
+            {isExpanded && !isTile && (
               <>
                 <button
                   data-dir-action
@@ -114,7 +126,7 @@ export const TreeNode = ({
                       deleteDirectory({
                         paths: directoryContents
                           .map((dc) => dc.key)
-                          .concat(path) as string[],
+                          .concat(path) as NodeProps["path"][],
                       }).then(onDelete);
                     }}
                   >
@@ -147,7 +159,7 @@ export const TreeNode = ({
           </button>
         </div>
       )}
-      {isExpanded && directoryContents.length > 0 && (
+      {isExpanded && !isTile && directoryContents.length > 0 && (
         <ul>
           {directoryContents
             .filter((dc) => dc.isDir)
