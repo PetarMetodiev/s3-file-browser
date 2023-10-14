@@ -15,10 +15,15 @@ export type RawObj = {
 };
 
 export const TreeView = () => {
-  const { fetchDirectoryContents, showNewFileInput, showNewDirectoryInput } =
-    useContext(FileContentsContext);
+  const {
+    fetchDirectoryContents,
+    showNewFileInput,
+    showNewDirectoryInput,
+    isLoading,
+  } = useContext(FileContentsContext);
   const { updateCredentials } = useContext(CredentialsContext);
   const [paths, setPaths] = useState<RawObj[] | undefined>();
+  const [emptyBucket, setEmptyBucket] = useState(false);
 
   const refreshDirectoryContents = useCallback(() => {
     fetchDirectoryContents({ path: "0#/" }).then((r) => {
@@ -29,6 +34,7 @@ export const TreeView = () => {
         }))
         .sort((a, b) => Number(b.isDir) - Number(a.isDir));
       setPaths(ps);
+      setEmptyBucket(!ps || ps.length === 0);
     });
   }, [fetchDirectoryContents]);
 
@@ -38,46 +44,49 @@ export const TreeView = () => {
 
   return (
     <div className="tree-view">
-      {paths && paths?.length > 0 ? (
-        <div data-tree-container>
-          <ul data-nodes-container>
-            {paths.map((p) => {
-              const nodeName = p.key?.split("/").at(-1);
-              return (
-                <TreeNode
-                  key={p.key!}
-                  nodeName={nodeName!}
-                  isDirectory={p.isDir}
-                  path={p.key!}
-                  onDelete={refreshDirectoryContents}
-                />
-              );
-            })}
-          </ul>
-          <div data-root-actions>
-            <button
-              onClick={() =>
-                showNewFileInput({
-                  path: "0#",
-                  onClose: refreshDirectoryContents,
-                })
-              }
-            >
-              <i className="gg-file-add"></i>
-            </button>
-            <button
-              onClick={() =>
-                showNewDirectoryInput({
-                  path: "0#",
-                  onClose: refreshDirectoryContents,
-                })
-              }
-            >
-              <i className="gg-folder-add"></i>
-            </button>
-          </div>
-        </div>
-      ) : (
+      <div data-tree-container>
+        {paths && paths.length > 0 && (
+          <>
+            <ul data-nodes-container>
+              {paths.map((p) => {
+                const nodeName = p.key?.split("/").at(-1);
+                return (
+                  <TreeNode
+                    key={p.key!}
+                    nodeName={nodeName!}
+                    isDirectory={p.isDir}
+                    path={p.key!}
+                    onDelete={refreshDirectoryContents}
+                  />
+                );
+              })}
+            </ul>
+            <div data-root-actions>
+              <button
+                onClick={() =>
+                  showNewFileInput({
+                    path: "0#",
+                    onClose: refreshDirectoryContents,
+                  })
+                }
+              >
+                <i className="gg-file-add"></i>
+              </button>
+              <button
+                onClick={() =>
+                  showNewDirectoryInput({
+                    path: "0#",
+                    onClose: refreshDirectoryContents,
+                  })
+                }
+              >
+                <i className="gg-folder-add"></i>
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+      {!isLoading && emptyBucket && (
         <div data-no-files>
           Nothing found in the bucket.
           <Button
