@@ -26,16 +26,18 @@ export const TreeView = () => {
   const [emptyBucket, setEmptyBucket] = useState(false);
 
   const refreshDirectoryContents = useCallback(() => {
-    fetchDirectoryContents({ path: "0#/" }).then((r) => {
-      const ps: RawObj[] | undefined = r
-        .map((o) => ({
-          key: o.Key,
-          isDir: o.Size === 0,
-        }))
-        .sort((a, b) => Number(b.isDir) - Number(a.isDir));
-      setPaths(ps);
-      setEmptyBucket(!ps || ps.length === 0);
-    });
+    fetchDirectoryContents({ path: "0#/" })
+      .then((r) => {
+        const ps: RawObj[] | undefined = r
+          .map((o) => ({
+            key: o.Key,
+            isDir: o.Size === 0,
+          }))
+          .sort((a, b) => Number(b.isDir) - Number(a.isDir));
+        setPaths(ps);
+        setEmptyBucket(!ps || ps.length === 0);
+      })
+      .catch();
   }, [fetchDirectoryContents]);
 
   useEffect(() => {
@@ -48,18 +50,20 @@ export const TreeView = () => {
         {paths && paths.length > 0 && (
           <>
             <ul data-nodes-container>
-              {paths.map((p) => {
-                const nodeName = p.key?.split("/").at(-1);
-                return (
-                  <TreeNode
-                    key={p.key!}
-                    nodeName={nodeName!}
-                    isDirectory={p.isDir}
-                    path={p.key!}
-                    onDelete={refreshDirectoryContents}
-                  />
-                );
-              })}
+              {paths
+                .filter((p) => p.isDir)
+                .map((p) => {
+                  const nodeName = p.key?.split("/").at(-1);
+                  return (
+                    <TreeNode
+                      key={p.key!}
+                      nodeName={nodeName!}
+                      isDirectory={p.isDir}
+                      path={p.key!}
+                      onDelete={refreshDirectoryContents}
+                    />
+                  );
+                })}
             </ul>
             <div data-root-actions>
               <button

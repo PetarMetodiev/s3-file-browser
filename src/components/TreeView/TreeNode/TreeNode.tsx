@@ -148,18 +148,20 @@ export const TreeNode = ({
       )}
       {isExpanded && directoryContents.length > 0 && (
         <ul>
-          {directoryContents.map((dc) => {
-            const nodeName = dc.key?.split("/").at(-1);
-            return (
-              <TreeNode
-                key={dc.key!}
-                nodeName={nodeName!}
-                isDirectory={dc.isDir}
-                path={dc.key!}
-                onDelete={() => refreshDirectoryContents()}
-              />
-            );
-          })}
+          {directoryContents
+            .filter((dc) => dc.isDir)
+            .map((dc) => {
+              const nodeName = dc.key?.split("/").at(-1);
+              return (
+                <TreeNode
+                  key={dc.key!}
+                  nodeName={nodeName!}
+                  isDirectory={dc.isDir}
+                  path={dc.key!}
+                  onDelete={() => refreshDirectoryContents()}
+                />
+              );
+            })}
         </ul>
       )}
     </li>

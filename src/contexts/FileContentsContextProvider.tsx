@@ -123,12 +123,17 @@ export const FileContentsContextProvider = ({
   const deleteObject = useDeleteObject();
   const deleteAllObjects = useDeleteAllObjects();
 
-  const errorHandler = useCallback(({ name, message }: S3ServiceException) => {
-    setNetworkError({ name, message });
-    setIsLoading(false);
-    setIsUploading(false);
-    logout();
-  }, [logout]);
+  const errorHandler = useCallback(
+    ({ name, message }: S3ServiceException) => {
+      setNetworkError({ name, message });
+      setIsLoading(false);
+      setIsUploading(false);
+      logout();
+      console.log({ name, message });
+      throw { name, message };
+    },
+    [logout]
+  );
 
   // add support for abort controller
   const fetchFileContents = useCallback(
@@ -146,7 +151,8 @@ export const FileContentsContextProvider = ({
           setIsNewFileInputVisible(false);
           setIsNewDirectoryInputVisible(false);
           return v;
-        }).catch(errorHandler);
+        })
+        .catch(errorHandler);
     },
     [getObject, errorHandler]
   );
@@ -154,13 +160,16 @@ export const FileContentsContextProvider = ({
   const fetchDirectoryContents = useCallback(
     ({ path }: { path: string }) => {
       setIsLoading(true);
-      return getAllObjects({ prefix: path }).then((r) => {
-        setIsLoading(false);
-        setNetworkError(defaultContext.networkError);
-        return r.Contents || [];
-      }).catch(errorHandler);
+      return getAllObjects({ prefix: path })
+        .then((r) => {
+          console.log("fetching...");
+          setIsLoading(false);
+          setNetworkError(defaultContext.networkError);
+          return r.Contents || [];
+        })
+        .catch(errorHandler);
     },
-    [getAllObjects,errorHandler]
+    [getAllObjects, errorHandler]
   );
 
   const uploadFile = useCallback(
@@ -174,13 +183,15 @@ export const FileContentsContextProvider = ({
       content: string;
     }) => {
       setIsUploading(true);
-      return putObject({ key: `${path}/${fileName}`, content }).then(() => {
-        setIsUploading(false);
-        setIsNewFileInputVisible(false);
-        setIsNewDirectoryInputVisible(false);
-        setNetworkError(defaultContext.networkError);
-        onCloseInputCallback();
-      }).catch(errorHandler);
+      return putObject({ key: `${path}/${fileName}`, content })
+        .then(() => {
+          setIsUploading(false);
+          setIsNewFileInputVisible(false);
+          setIsNewDirectoryInputVisible(false);
+          setNetworkError(defaultContext.networkError);
+          onCloseInputCallback();
+        })
+        .catch(errorHandler);
     },
     [putObject, onCloseInputCallback, errorHandler]
   );
@@ -189,13 +200,15 @@ export const FileContentsContextProvider = ({
     ({ path, directoryName }: { path: string; directoryName: string }) => {
       setIsUploading(true);
       const key = `${path}/${directoryName}`;
-      return putObject({ key, content: "" }).then(() => {
-        setIsUploading(false);
-        setIsNewFileInputVisible(false);
-        setIsNewDirectoryInputVisible(false);
-        setNetworkError(defaultContext.networkError);
-        onCloseInputCallback();
-      }).catch(errorHandler);
+      return putObject({ key, content: "" })
+        .then(() => {
+          setIsUploading(false);
+          setIsNewFileInputVisible(false);
+          setIsNewDirectoryInputVisible(false);
+          setNetworkError(defaultContext.networkError);
+          onCloseInputCallback();
+        })
+        .catch(errorHandler);
     },
     [putObject, onCloseInputCallback, errorHandler]
   );
@@ -217,12 +230,13 @@ export const FileContentsContextProvider = ({
   const deleteFile = useCallback(
     ({ path }: { path: string }) => {
       setIsLoading(true);
-      return deleteObject({ key: path }).then((r) => {
-        setIsLoading(false);
-        setNetworkError(defaultContext.networkError);
-        return r.DeleteMarker;
-      }, errorHandler);
-      // .catch();
+      return deleteObject({ key: path })
+        .then((r) => {
+          setIsLoading(false);
+          setNetworkError(defaultContext.networkError);
+          return r.DeleteMarker;
+        })
+        .catch(errorHandler);
     },
     [deleteObject, errorHandler]
   );
