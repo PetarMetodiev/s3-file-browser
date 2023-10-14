@@ -19,6 +19,7 @@ import { usePutObject } from "@src/hooks/usePutObject";
 import { directoryLevelSeparator } from "@src/utils/consts";
 import { noop } from "@src/utils/noop";
 import { S3CredentialsContext } from "./S3CredentialsContextProvider";
+import { NodeProps } from "@src/components/TreeView/TreeNode/TreeNode";
 
 type FileContentsContextType = {
   isLoading: boolean;
@@ -26,7 +27,7 @@ type FileContentsContextType = {
   fetchFileContents: ({
     path,
   }: {
-    path: string;
+    path: NodeProps["path"];
   }) => Promise<string | undefined>;
   isUploading: boolean;
   uploadFile: ({
@@ -36,29 +37,33 @@ type FileContentsContextType = {
   }: {
     content: string;
     fileName: string;
-    path: string;
+    path: NodeProps["path"];
   }) => Promise<void>;
   deleteAllObjects: () => void;
   createDirectory: ({
     path,
     directoryName,
   }: {
-    path: string;
+    path: NodeProps["path"];
     directoryName: string;
   }) => Promise<void>;
-  deleteDirectory: ({ paths }: { paths: string[] }) => Promise<unknown>;
-  deleteFile: ({ path }: { path: string }) => Promise<unknown>;
+  deleteDirectory: ({
+    paths,
+  }: {
+    paths: NodeProps["path"][];
+  }) => Promise<unknown>;
+  deleteFile: ({ path }: { path: NodeProps["path"] }) => Promise<unknown>;
   fetchDirectoryContents: ({
     path,
   }: {
-    path: string;
-  }) => Promise<_Object[] | []>;
+    path: NodeProps["path"];
+  }) => Promise<(_Object & { Key?: NodeProps["path"] })[] | []>;
   isNewDirectoryInputVisible: boolean;
   showNewDirectoryInput: ({
     path,
     onClose,
   }: {
-    path: string;
+    path: NodeProps["path"];
     onClose: () => void; // possibly return the reason for closing the input
   }) => void;
   isNewFileInputVisible: boolean;
@@ -66,12 +71,14 @@ type FileContentsContextType = {
     path,
     onClose,
   }: {
-    path: string;
+    path: NodeProps["path"];
     onClose: () => void; // possibly return the reason for closing the input
   }) => void;
-  selectedPath: string;
+  selectedPath: NodeProps["path"];
   displayPath: string;
   networkError: { name: string; message: string };
+  currentDirectory: `${number}${typeof directoryLevelSeparator}/${string}`;
+  selectCurrentDirectory: ({ path }: { path: NodeProps["path"] }) => void;
 };
 
 const defaultContext: FileContentsContextType = {
@@ -137,7 +144,7 @@ export const FileContentsContextProvider = ({
 
   // add support for abort controller
   const fetchFileContents = useCallback(
-    ({ path }: { path: string }) => {
+    ({ path }: { path: NodeProps["path"] }) => {
       setIsLoading(true);
       return getObject({ key: path })
         .then((r) => r.Body?.transformToString())
@@ -158,14 +165,15 @@ export const FileContentsContextProvider = ({
   );
 
   const fetchDirectoryContents = useCallback(
-    ({ path }: { path: string }) => {
+    ({ path }: { path: NodeProps["path"] }) => {
       setIsLoading(true);
       return getAllObjects({ prefix: path })
         .then((r) => {
           console.log("fetching...");
           setIsLoading(false);
           setNetworkError(defaultContext.networkError);
-          return r.Contents || [];
+          return (r.Contents || []) as
+            | (_Object & { Key?: NodeProps["path"] })[];
         })
         .catch(errorHandler);
     },
@@ -178,7 +186,7 @@ export const FileContentsContextProvider = ({
       fileName,
       content,
     }: {
-      path: string;
+      path: NodeProps["path"];
       fileName: string;
       content: string;
     }) => {
@@ -197,8 +205,13 @@ export const FileContentsContextProvider = ({
   );
 
   const createDirectory = useCallback(
-    ({ path, directoryName }: { path: string; directoryName: string }) => {
-      setIsUploading(true);
+    ({
+      path,
+      directoryName,
+    }: {
+      path: NodeProps["path"];
+      directoryName: string;
+    }) => {
       const key = `${path}/${directoryName}`;
       return putObject({ key, content: "" })
         .then(() => {
@@ -214,7 +227,7 @@ export const FileContentsContextProvider = ({
   );
 
   const deleteDirectory = useCallback(
-    ({ paths }: { paths: string[] }) => {
+    ({ paths }: { paths: NodeProps["path"][] }) => {
       setIsLoading(true);
       return deleteAllObjects({ keys: paths })
         .then((r) => {
@@ -228,7 +241,7 @@ export const FileContentsContextProvider = ({
   );
 
   const deleteFile = useCallback(
-    ({ path }: { path: string }) => {
+    ({ path }: { path: NodeProps["path"] }) => {
       setIsLoading(true);
       return deleteObject({ key: path })
         .then((r) => {
@@ -242,7 +255,7 @@ export const FileContentsContextProvider = ({
   );
 
   const showNewDirectoryInput = useCallback(
-    ({ path, onClose }: { path: string; onClose: () => void }) => {
+    ({ path, onClose }: { path: NodeProps["path"]; onClose: () => void }) => {
       setOnCloseInputCallback(() => onClose);
       setIsNewFileInputVisible(false);
       setSelectedPath(path);
@@ -255,7 +268,7 @@ export const FileContentsContextProvider = ({
   );
 
   const showNewFileInput = useCallback(
-    ({ path, onClose }: { path: string; onClose: () => void }) => {
+    ({ path, onClose }: { path: NodeProps["path"]; onClose: () => void }) => {
       setOnCloseInputCallback(() => onClose);
       setIsNewDirectoryInputVisible(false);
       setSelectedPath(path);

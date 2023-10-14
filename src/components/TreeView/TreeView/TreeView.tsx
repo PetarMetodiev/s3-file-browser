@@ -8,9 +8,10 @@ import "./TreeView.css";
 import "css.gg/icons/css/file-add.css";
 import "css.gg/icons/css/folder-add.css";
 import { S3CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
+import { directoryLevelSeparator, rootPath } from "@src/utils/consts";
 
 export type RawObj = {
-  key?: string;
+  key?: `${number}${typeof directoryLevelSeparator}/${string}`;
   isDir: boolean;
 };
 
@@ -30,7 +31,7 @@ export const TreeView = () => {
       .then((r) => {
         const ps: RawObj[] | undefined = r
           .map((o) => ({
-            key: o.Key,
+            key: o.Key as RawObj["key"],
             isDir: o.Size === 0,
           }))
           .sort((a, b) => Number(b.isDir) - Number(a.isDir));

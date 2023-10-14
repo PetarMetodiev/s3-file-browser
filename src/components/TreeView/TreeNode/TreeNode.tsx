@@ -11,9 +11,9 @@ import "css.gg/icons/css/trash.css";
 import "css.gg/icons/css/file-add.css";
 import { directoryLevelSeparator } from "@src/utils/consts";
 
-type NodeProps = {
+export type NodeProps = {
   nodeName: string;
-  path: string;
+  path:  `${number}${typeof directoryLevelSeparator}/${string}`;
   isDirectory: boolean;
   onDelete: () => void;
 };
@@ -27,6 +27,7 @@ export const TreeNode = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   const [directoryContents, setDirectoryContents] = useState<RawObj[]>([]);
+
   const {
     fetchFileContents,
     fetchDirectoryContents,
@@ -40,7 +41,7 @@ export const TreeNode = ({
   const depth = parseInt(path.slice(0, pathSeparatorIndex));
   const pathBelow = `${depth + 1}${directoryLevelSeparator}${path.slice(
     pathSeparatorIndex + 1
-  )}`;
+  )}` as any;
 
   const refreshDirectoryContents = useCallback(() => {
     fetchDirectoryContents({ path: pathBelow }).then((r) => {
