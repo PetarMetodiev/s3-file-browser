@@ -16,6 +16,7 @@ import {
 
 const defaultContext = {
   updateCredentials: noop,
+  logout: noop,
   isAuthenticated: false,
   client: null,
   bucket: localStorage.getItem(bucketLS) || "",
@@ -26,6 +27,7 @@ const defaultContext = {
 
 type CredentialsContextType = {
   updateCredentials: (credentials: Credentials) => void;
+  logout: () => void;
   isAuthenticated: boolean;
   client: S3Client | null;
 };
@@ -81,6 +83,15 @@ export const S3CredentialsContextProvider = ({
     },
     [setAuthentication]
   );
+
+  const logout = useCallback(() => {
+    updateCredentials({
+      accessKeyId: "",
+      bucket: "",
+      region: "",
+      secretAccessKey: "",
+    });
+  }, [updateCredentials]);
   useEffect(() => setAuthentication(), [setAuthentication]);
 
   return (
@@ -93,6 +104,7 @@ export const S3CredentialsContextProvider = ({
         accessKeyId,
         secretAccessKey,
         updateCredentials,
+        logout,
       }}
     >
       {children}

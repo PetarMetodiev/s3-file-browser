@@ -21,7 +21,7 @@ export const TreeView = () => {
     showNewDirectoryInput,
     isLoading,
   } = useContext(FileContentsContext);
-  const { updateCredentials } = useContext(CredentialsContext);
+  const { logout } = useContext(CredentialsContext);
   const [paths, setPaths] = useState<RawObj[] | undefined>();
   const [emptyBucket, setEmptyBucket] = useState(false);
 
@@ -113,18 +113,7 @@ export const TreeView = () => {
           </Button>
         </div>
       )}
-      <Button
-        onClick={() =>
-          updateCredentials({
-            accessKeyId: "",
-            bucket: "",
-            region: "",
-            secretAccessKey: "",
-          })
-        }
-      >
-        Logout
-      </Button>
+      <Button onClick={logout}>Logout</Button>
     </div>
   );
 };

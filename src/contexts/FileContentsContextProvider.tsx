@@ -100,7 +100,7 @@ export const FileContentsContext =
 export const FileContentsContextProvider = ({
   children,
 }: PropsWithChildren) => {
-  const { updateCredentials } = useContext(CredentialsContext);
+  const { logout } = useContext(CredentialsContext);
 
   const [isLoading, setIsLoading] = useState(defaultContext.isLoading);
   const [fileContents, setFileContents] = useState(defaultContext.fileContents);
@@ -127,13 +127,8 @@ export const FileContentsContextProvider = ({
     setNetworkError({ name, message });
     setIsLoading(false);
     setIsUploading(false);
-    updateCredentials({
-      accessKeyId:"",
-      bucket: "",
-      region: "",
-      secretAccessKey: ""
-    })
-  }, [updateCredentials]);
+    logout();
+  }, [logout]);
 
   // add support for abort controller
   const fetchFileContents = useCallback(
