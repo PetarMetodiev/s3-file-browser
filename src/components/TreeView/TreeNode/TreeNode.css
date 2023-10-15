@@ -29,7 +29,7 @@
     background: transparent;
     cursor: pointer;
     &:hover,
-    &:focus {
+    &:focus-visible {
       color: var(--accent);
     }
   }

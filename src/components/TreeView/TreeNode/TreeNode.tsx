@@ -48,7 +48,7 @@ export const TreeNode = ({
     onClick: () => {
       if (isExpanded) {
         setIsExpanded(false);
-      } else {
+      } else if (!isTile) {
         refreshDirectoryContents().then(() => setIsExpanded(true));
       }
     },
