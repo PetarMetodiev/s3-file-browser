@@ -1,0 +1,31 @@
+.breadcrumbs-container {
+  display: flex;
+
+  & [data-breadcrumb-element] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2em;
+    padding: 0.1em 0.5em;
+    cursor: pointer;
+    background: none;
+    border: none;
+
+    &:disabled {
+      color: var(--accent);
+      cursor: auto;
+
+      &:hover {
+        background: none;
+      }
+    }
+
+    &:hover {
+      background-color: var(--secondary);
+    }
+
+    & i[class^="gg"] {
+      margin-right: 0.5em;
+    }
+  }
+}
