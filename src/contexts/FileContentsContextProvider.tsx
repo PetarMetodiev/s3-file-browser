@@ -56,9 +56,11 @@ type FileContentsContextType = {
   fetchDirectoryContents: ({
     path,
     setAsCurrent,
+    bustCache,
   }: {
     path: NodeProps["path"];
     setAsCurrent?: boolean;
+    bustCache?: boolean;
   }) => Promise<RawObj[]>;
   isNewDirectoryInputVisible: boolean;
   showNewDirectoryInput: ({
@@ -171,12 +173,15 @@ export const FileContentsContextProvider = ({
     ({
       path,
       setAsCurrent,
+      bustCache
     }: {
       path: NodeProps["path"];
       setAsCurrent?: boolean;
+      bustCache?: boolean;
     }) => {
       setIsLoading(true);
-      if (currentDirectory === path) {
+
+      if (currentDirectory === path && !bustCache) {
         setIsLoading(false);
         return Promise.resolve(directoryContentsCache);
       }
