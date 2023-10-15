@@ -17,7 +17,7 @@ const makeGetAllObjectsCommand = ({
 }) => {
   const input: ListObjectsV2CommandInput = {
     Bucket: bucket,
-    Prefix: prefix,
+    Prefix: prefix + "/",
   };
 
   return new ListObjectsV2Command(input);
