@@ -19,6 +19,10 @@
       place-items: center;
     }
 
+    & button[data-selected="true"] {
+      box-shadow: none;
+    }
+
     & i[class^="gg"] {
       --ggs: 2;
     }
@@ -50,7 +54,12 @@
     cursor: pointer;
 
     &[data-selected="true"] {
-      box-shadow: inset 0px -10px 0px 0px var(--accent);
+      --selected-color: var(--accent);
+      box-shadow: inset 0px -10px 0px 0px var(--selected-color);
+
+      &:hover {
+        --selected-color: var(--primary);
+      }
     }
   }
 
