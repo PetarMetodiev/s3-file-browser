@@ -5,6 +5,8 @@ import "./Breadcrumbs.css";
 import { rootPath } from "@src/utils/consts";
 import { NodeProps } from "../TreeView/TreeNode/TreeNode";
 
+const maxVisibleBreadcrumbs = 4;
+
 type BreadcrumbsProps = {
   depth: number;
   segments: string[];
@@ -18,7 +20,8 @@ export const Breadcrumbs = ({ depth, segments, onClick }: BreadcrumbsProps) => {
       <button onClick={() => onClick(rootPath)} data-breadcrumb-element>
         <i className="gg-home"></i>
       </button>
-      {segments.slice(-4).map((s, i, arr) => {
+      {segments.length > maxVisibleBreadcrumbs && "..."}
+      {segments.slice(-maxVisibleBreadcrumbs).map((s, i, arr) => {
         return (
           <button
             key={`${parentPath}-${s}`}
