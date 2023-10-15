@@ -50,7 +50,6 @@ export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
 
   return (
     <div className={`current-directory-inner ${className || ""}`}>
-      {/* will be used as a scroll container*/}
       <div data-breadcrumbs>
         <Breadcrumbs
           depth={depth}
@@ -61,7 +60,7 @@ export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
         />
       </div>
       <div data-nodes-wrapper>
-        {paths && paths.length > 0 && (
+        {paths && paths.length > 0 ? (
           <ul data-nodes-container>
             {paths.map((p) => {
               const nodeName = p.key?.split("/").at(-1);
@@ -77,6 +76,10 @@ export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
               );
             })}
           </ul>
+        ) : (
+          <div data-empty-dir>
+            <em>Nothing here</em>
+          </div>
         )}
       </div>
       <div data-dir-actions-container>

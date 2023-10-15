@@ -7,6 +7,13 @@
 
   & [data-nodes-wrapper] {
     overflow-y: auto;
+
+    & [data-empty-dir] {
+      display: grid;
+      place-content: center;
+      opacity: 0.3;
+      font-size: 2rem;
+    }
   }
 
   & [data-nodes-container] {
