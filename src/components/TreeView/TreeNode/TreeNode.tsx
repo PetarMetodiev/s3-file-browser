@@ -54,6 +54,7 @@ export const TreeNode = ({
     },
     onDoubleClick: () => refreshDirectoryContents({ setAsCurrent: true }),
   });
+
   const pathSeparatorIndex = path.indexOf(directoryLevelSeparator);
   const depth = parseInt(path.slice(0, pathSeparatorIndex));
   const pathBelow = `${depth + 1}${directoryLevelSeparator}${path.slice(
@@ -92,50 +93,6 @@ export const TreeNode = ({
               )}{" "}
               {nodeName}
             </button>
-            {isExpanded && !isTile && (
-              <>
-                <button
-                  data-dir-action
-                  onClick={() => {
-                    showNewFileInput({
-                      path: pathBelow,
-                      onClose: () => refreshDirectoryContents(),
-                    });
-                  }}
-                >
-                  <i className="gg-file-add"></i>
-                </button>
-                <button
-                  data-dir-action
-                  onClick={() => {
-                    showNewDirectoryInput({
-                      path: pathBelow,
-                      onClose: () => refreshDirectoryContents(),
-                    });
-                  }}
-                >
-                  <i className="gg-folder-add"></i>
-                </button>
-
-                {isExpanded && !directoryContents.some((obj) => obj.isDir) && (
-                  <button
-                    data-dir-action
-                    onClick={() => {
-                      // deleting only if there are no other directories inside
-                      // the reason is that if we start drilling recursively, we could end up with a
-                      // network congestion of requests just to gather all child keys
-                      deleteDirectory({
-                        paths: directoryContents
-                          .map((dc) => dc.key)
-                          .concat(path) as NodeProps["path"][],
-                      }).then(onDelete);
-                    }}
-                  >
-                    <i className="gg-trash"></i>
-                  </button>
-                )}
-              </>
-            )}
           </div>
 
           {isEmpty && isExpanded && <em data-empty-text>Nothing here</em>}
