@@ -12,20 +12,6 @@
     }
   }
 
-  & [data-root-actions] {
-    display: flex;
-    justify-content: space-around;
-    & button {
-      border: none;
-      background: none;
-      cursor: pointer;
-
-      &:hover {
-        color: var(--accent);
-      }
-    }
-  }
-
   & [data-no-files] {
     display: flex;
     gap: 1rem;

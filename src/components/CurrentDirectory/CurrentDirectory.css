@@ -5,6 +5,10 @@
   display: grid;
   grid-template-rows: min-content 1fr min-content;
 
+  & [data-nodes-wrapper] {
+    overflow-y: auto;
+  }
+
   & [data-nodes-container] {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
