@@ -1,9 +1,8 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import "./CurrentDirectory.css";
-import { rootPath } from "@src/utils/consts";
 import { RawObj } from "../TreeView/TreeView/TreeView";
 import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
-import { TreeNode } from "../TreeView/TreeNode/TreeNode";
+import { NodeProps, TreeNode } from "../TreeView/TreeNode/TreeNode";
 import { Breadcrumbs } from "../Breadcrumbs/Breadcrumbs";
 
 type CurrentDirectoryProps = {
@@ -20,7 +19,7 @@ export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
     ({
       path,
       setAsCurrent,
-    }: { path?: string; setAsCurrent?: boolean } = {}) => {
+    }: { path?: NodeProps["path"]; setAsCurrent?: boolean } = {}) => {
       fetchDirectoryContents({ path: path || currentDirectory, setAsCurrent })
         .then((r) => {
           setPaths(r);

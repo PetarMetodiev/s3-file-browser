@@ -3,11 +3,12 @@ import "css.gg/icons/css/home.css";
 
 import "./Breadcrumbs.css";
 import { rootPath } from "@src/utils/consts";
+import { NodeProps } from "../TreeView/TreeNode/TreeNode";
 
 type BreadcrumbsProps = {
   depth: number;
   segments: string[];
-  onClick: (newPath: string) => void;
+  onClick: (newPath: NodeProps["path"]) => void;
 };
 
 export const Breadcrumbs = ({ depth, segments, onClick }: BreadcrumbsProps) => {
@@ -25,7 +26,7 @@ export const Breadcrumbs = ({ depth, segments, onClick }: BreadcrumbsProps) => {
               const indexFromBack = arr.length - 1 - i;
               const elementPath = `${depth - indexFromBack}#//${segments
                 .slice(0, -indexFromBack)
-                .join("/")}`;
+                .join("/")}` as NodeProps["path"];
               onClick(elementPath);
             }}
             disabled={i === arr.length - 1}
