@@ -1,17 +1,17 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 
 import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
+import { directoryLevelSeparator } from "@src/utils/consts";
+import { useDoubleClick } from "@src/hooks/useDoubleClick";
 import { RawObj } from "../TreeView/TreeView";
 
-import "./TreeNode.css";
 import "css.gg/icons/css/folder-add.css";
 import "css.gg/icons/css/folder.css";
 import "css.gg/icons/css/folder-remove.css";
 import "css.gg/icons/css/file-document.css";
 import "css.gg/icons/css/trash.css";
 import "css.gg/icons/css/file-add.css";
-import { directoryLevelSeparator } from "@src/utils/consts";
-import { useDoubleClick } from "@src/hooks/useDoubleClick";
+import "./TreeNode.css";
 
 export type NodeProps = {
   nodeName: string;

@@ -1,8 +1,15 @@
 .upload-content {
   padding: 1rem;
+  min-width: 100%;
+
   & form {
     display: flex;
+    gap: 0.5rem;
     flex-direction: column;
-    flex-basis: max(35%, 70ch);
+    align-items: center;
+
+    & .form-input {
+      width: min(50ch, 70%);
+    }
   }
 }

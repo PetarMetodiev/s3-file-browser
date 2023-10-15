@@ -3,6 +3,8 @@ import { useContext, useState } from "react";
 import { Input } from "../Input/Input";
 import { Button } from "../Button/Button";
 
+import "./UploadContent.css";
+
 export const UploadContent = () => {
   const [newDirectory, setNewDirectory] = useState("");
   const [directoryNameError, setDirectoryNameError] = useState(false);
@@ -37,6 +39,7 @@ export const UploadContent = () => {
         >
           <Input
             label="Enter new directory name(min 3 chars, no / allowed)"
+            className="form-input"
             onChange={setNewDirectory}
             value={newDirectory}
             required
@@ -69,6 +72,7 @@ export const UploadContent = () => {
         >
           <Input
             label="Enter new file name(min 3 chars)"
+            className="form-input"
             onChange={setNewFileName}
             value={newFileName}
             required
@@ -76,6 +80,7 @@ export const UploadContent = () => {
           />
           <Input
             label="Enter contents(min 3 chars)"
+            className="form-input"
             onChange={setNewFileContent}
             value={newFileContent}
             required

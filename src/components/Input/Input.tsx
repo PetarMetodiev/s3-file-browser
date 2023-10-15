@@ -21,7 +21,7 @@ export const Input = ({
   const id = useId();
 
   return (
-    <div className={`input-container ${className}`}>
+    <div className={`input-container ${className || ""}`}>
       <label htmlFor={id} data-label>
         {label}:
       </label>

@@ -8,8 +8,24 @@
   grid-template-columns: 1fr;
   gap: 1rem;
 
+  & [data-titlebar] {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
   & [data-main-content] {
     overflow-y: auto;
     max-height: 100%;
+    width: 100%;
+    height: 100%;
+
+    display: grid;
+    place-content: center;
+    grid-auto-columns: 1fr;
+
+    & [data-display-message] {
+      text-align: center;
+    }
   }
 }
