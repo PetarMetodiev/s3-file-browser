@@ -4,6 +4,7 @@ import { RawObj } from "../TreeView/TreeView/TreeView";
 import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
 import { NodeProps, TreeNode } from "../TreeView/TreeNode/TreeNode";
 import { Breadcrumbs } from "../Breadcrumbs/Breadcrumbs";
+import { DirectoryActions } from "../DirectoryActions/DirectoryActions";
 
 type CurrentDirectoryProps = {
   className?: string;
@@ -37,16 +38,16 @@ export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
   return (
     <div className={`current-directory-inner ${className || ""}`}>
       {/* will be used as a scroll container*/}
+      <div data-breadcrumbs>
+        <Breadcrumbs
+          depth={depth}
+          segments={segments}
+          onClick={(e) =>
+            refreshDirectoryContents({ path: e, setAsCurrent: true })
+          }
+        />
+      </div>
       <div>
-        <div data-breadcrumbs>
-          <Breadcrumbs
-            depth={depth}
-            segments={segments}
-            onClick={(e) =>
-              refreshDirectoryContents({ path: e, setAsCurrent: true })
-            }
-          />
-        </div>
         {paths && paths.length > 0 && (
           <ul data-nodes-container>
             {paths.map((p) => {
@@ -64,6 +65,14 @@ export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
             })}
           </ul>
         )}
+      </div>
+      <div data-dir-actions-container>
+        <DirectoryActions
+          onNewFile={() => console.log("on new file")}
+          onNewDirectory={() => console.log("on new directory")}
+          onDelete={() => console.log("on delete")}
+          showDelete={true}
+        />
       </div>
     </div>
   );
