@@ -1,6 +1,8 @@
 import "css.gg/icons/css/chevron-right.css";
+import "css.gg/icons/css/home.css";
 
 import "./Breadcrumbs.css";
+import { rootPath } from "@src/utils/consts";
 
 type BreadcrumbsProps = {
   depth: number;
@@ -12,7 +14,9 @@ export const Breadcrumbs = ({ depth, segments, onClick }: BreadcrumbsProps) => {
   const parentPath = `${depth - 1}#//${segments.slice(0, -1).join("/")}`;
   return (
     <div className="breadcrumbs-container">
-      ...
+      <button onClick={() => onClick(rootPath)} data-breadcrumb-element>
+        <i className="gg-home"></i>
+      </button>
       {segments.slice(-4).map((s, i, arr) => {
         return (
           <button

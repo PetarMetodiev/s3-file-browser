@@ -90,7 +90,7 @@ export const TreeNode = ({
               ) : (
                 <i className={`gg-folder${isTile ? "" : "-add"}`}></i>
               )}{" "}
-              {nodeName}/
+              {nodeName}
             </button>
             {isExpanded && !isTile && (
               <>

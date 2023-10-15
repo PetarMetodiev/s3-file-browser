@@ -1,5 +1,6 @@
 .current-directory-inner {
   min-height: 100%;
+  padding: 1rem;
 
   & [data-nodes-container] {
     display: grid;
