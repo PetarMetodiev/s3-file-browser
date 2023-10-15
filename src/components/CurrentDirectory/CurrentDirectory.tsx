@@ -11,16 +11,14 @@ type CurrentDirectoryProps = {
 
 export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
   const [paths, setPaths] = useState<RawObj[] | undefined>();
-  const [emptyBucket, setEmptyBucket] = useState(false);
 
-  const { fetchDirectoryContents, isLoading, currentDirectory } =
+  const { fetchDirectoryContents, currentDirectory } =
     useContext(FileContentsContext);
 
   const refreshDirectoryContents = useCallback(() => {
     fetchDirectoryContents({ path: currentDirectory })
       .then((r) => {
         setPaths(r);
-        setEmptyBucket(!r || r.length === 0);
       })
       .catch();
   }, [fetchDirectoryContents, currentDirectory]);

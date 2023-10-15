@@ -44,6 +44,7 @@ export const TreeView = ({ className }: TreeViewProps) => {
 
   useEffect(() => {
     refreshDirectoryContents({ setAsCurrent: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -39,6 +39,7 @@ export const TreeNode = ({
     deleteFile,
     showNewFileInput,
     showNewDirectoryInput,
+    currentDirectory,
     // currentDirectory,
     // selectCurrentDirectory,
   } = useContext(FileContentsContext);
@@ -53,7 +54,6 @@ export const TreeNode = ({
     },
     onDoubleClick: () => refreshDirectoryContents({ setAsCurrent: true }),
   });
-
   const pathSeparatorIndex = path.indexOf(directoryLevelSeparator);
   const depth = parseInt(path.slice(0, pathSeparatorIndex));
   const pathBelow = `${depth + 1}${directoryLevelSeparator}${path.slice(
@@ -80,11 +80,12 @@ export const TreeNode = ({
           <div data-directory>
             <button
               data-expander
+              data-selected={currentDirectory === pathBelow}
               onClick={(e) => {
                 handleClick(e);
               }}
             >
-              {isExpanded ? (
+              {isExpanded && !isTile ? (
                 <i className="gg-folder-remove"></i>
               ) : (
                 <i className={`gg-folder${isTile ? "" : "-add"}`}></i>

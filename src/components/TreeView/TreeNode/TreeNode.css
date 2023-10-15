@@ -48,6 +48,10 @@
     border: none;
     background: transparent;
     cursor: pointer;
+
+    &[data-selected="true"] {
+      box-shadow: inset 0px -10px 0px 0px var(--accent);
+    }
   }
 
   & ul {
