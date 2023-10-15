@@ -4,11 +4,10 @@ import { TreeNode } from "../TreeNode/TreeNode";
 import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
 import { Button } from "@src/components/Button/Button";
 
-import "./TreeView.css";
-import "css.gg/icons/css/file-add.css";
-import "css.gg/icons/css/folder-add.css";
 import { S3CredentialsContext } from "@src/contexts/S3CredentialsContextProvider";
 import { directoryLevelSeparator, rootPath } from "@src/utils/consts";
+
+import "./TreeView.css";
 
 export type RawObj = {
   key?: `${number}${typeof directoryLevelSeparator}/${string}`;
@@ -68,28 +67,6 @@ export const TreeView = ({ className }: TreeViewProps) => {
                   );
                 })}
             </ul>
-            <div data-root-actions>
-              <button
-                onClick={() =>
-                  showNewFileInput({
-                    path: rootPath,
-                    onClose: refreshDirectoryContents,
-                  })
-                }
-              >
-                <i className="gg-file-add"></i>
-              </button>
-              <button
-                onClick={() =>
-                  showNewDirectoryInput({
-                    path: rootPath,
-                    onClose: refreshDirectoryContents,
-                  })
-                }
-              >
-                <i className="gg-folder-add"></i>
-              </button>
-            </div>
           </>
         )}
       </div>

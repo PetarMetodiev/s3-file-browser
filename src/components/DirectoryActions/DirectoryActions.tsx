@@ -23,10 +23,6 @@ export const DirectoryActions = ({
         data-dir-action
         onClick={onNewFile}
         // onClick={() => {
-        //   showNewFileInput({
-        //     path: pathBelow,
-        //     // onClose: () => refreshDirectoryContents(),
-        //   });
         // }}
       >
         <i className="gg-file-add"></i>
@@ -35,12 +31,6 @@ export const DirectoryActions = ({
       <button
         data-dir-action
         onClick={onNewDirectory}
-        // onClick={() => {
-        //   showNewDirectoryInput({
-        //     path: pathBelow,
-        //     // onClose: () => refreshDirectoryContents(),
-        //   });
-        // }}
       >
         <i className="gg-folder-add"></i>
         <span data-text-container>Create directory</span>

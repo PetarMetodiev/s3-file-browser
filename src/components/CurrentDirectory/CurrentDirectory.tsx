@@ -13,15 +13,28 @@ type CurrentDirectoryProps = {
 export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
   const [paths, setPaths] = useState<RawObj[] | undefined>();
 
-  const { fetchDirectoryContents, currentDirectory } =
-    useContext(FileContentsContext);
+  const {
+    fetchDirectoryContents,
+    currentDirectory,
+    showNewFileInput,
+    showNewDirectoryInput,
+  } = useContext(FileContentsContext);
 
   const refreshDirectoryContents = useCallback(
     ({
       path,
       setAsCurrent,
-    }: { path?: NodeProps["path"]; setAsCurrent?: boolean } = {}) => {
-      fetchDirectoryContents({ path: path || currentDirectory, setAsCurrent })
+      bustCache,
+    }: {
+      path?: NodeProps["path"];
+      setAsCurrent?: boolean;
+      bustCache?: boolean;
+    } = {}) => {
+      fetchDirectoryContents({
+        path: path || currentDirectory,
+        setAsCurrent,
+        bustCache,
+      })
         .then((r) => {
           setPaths(r);
         })
@@ -47,7 +60,7 @@ export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
           }
         />
       </div>
-      <div>
+      <div data-nodes-wrapper>
         {paths && paths.length > 0 && (
           <ul data-nodes-container>
             {paths.map((p) => {
@@ -68,8 +81,28 @@ export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
       </div>
       <div data-dir-actions-container>
         <DirectoryActions
-          onNewFile={() => console.log("on new file")}
-          onNewDirectory={() => console.log("on new directory")}
+          onNewFile={() =>
+            showNewFileInput({
+              path: currentDirectory,
+              onClose: () =>
+                refreshDirectoryContents({
+                  path: currentDirectory,
+                  setAsCurrent: true,
+                  bustCache: true,
+                }),
+            })
+          }
+          onNewDirectory={() =>
+            showNewDirectoryInput({
+              path: currentDirectory,
+              onClose: () =>
+                refreshDirectoryContents({
+                  path: currentDirectory,
+                  setAsCurrent: true,
+                  bustCache: true,
+                }),
+            })
+          }
           onDelete={() => console.log("on delete")}
           showDelete={true}
         />

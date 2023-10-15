@@ -35,10 +35,7 @@ export const TreeNode = ({
   const {
     fetchFileContents,
     fetchDirectoryContents,
-    deleteDirectory,
     deleteFile,
-    showNewFileInput,
-    showNewDirectoryInput,
     currentDirectory,
     // currentDirectory,
     // selectCurrentDirectory,
