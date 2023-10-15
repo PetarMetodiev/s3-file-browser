@@ -2,16 +2,22 @@
   display: flex;
   gap: 2rem;
   justify-content: space-around;
+
   padding-block: 0.5rem;
 
-  & button {
+  max-width: 40rem;
+  margin: 0 auto;
+
+  & [data-dir-action] {
     border: none;
     background: transparent;
     cursor: pointer;
 
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1em;
+    flex-wrap: wrap;
 
     &:hover,
     &:focus-visible {
