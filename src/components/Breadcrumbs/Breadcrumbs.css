@@ -1,5 +1,6 @@
 .breadcrumbs-container {
   display: flex;
+  min-height: 2rem;
 
   & [data-breadcrumb-element] {
     display: flex;
