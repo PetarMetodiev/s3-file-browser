@@ -45,7 +45,6 @@ export const TreeNode = ({
     fetchDirectoryContents,
     deleteFile,
     currentDirectory,
-    // selectCurrentDirectory,
   } = useContext(FileContentsContext);
 
   const handleClick = useDoubleClick({
@@ -100,9 +99,7 @@ export const TreeNode = ({
             <button
               data-expander
               data-selected={currentDirectory === pathBelow}
-              onClick={(e) => {
-                handleClick(e);
-              }}
+              onClick={handleClick}
             >
               {isExpanded && !isTile ? (
                 <i className="gg-folder-remove"></i>
@@ -119,7 +116,7 @@ export const TreeNode = ({
         <div className="leaf-node">
           <button
             data-fetcher
-            onClick={() => {
+            onDoubleClick={() => {
               fetchFileContents({ path });
             }}
           >
