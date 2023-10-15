@@ -98,7 +98,7 @@ const defaultContext: FileContentsContextType = {
   isNewFileInputVisible: false,
   showNewFileInput: noop,
   currentDirectory: "invalid" as typeof rootPath,
-  currentFile: rootPath,
+  currentFile: "",
   networkError: { name: "", message: "" },
 };
 
@@ -159,7 +159,7 @@ export const FileContentsContextProvider = ({
           setFileContents(v || "no data");
 
           const pathSeparatorIndex = path.indexOf(directoryLevelSeparator);
-          setCurrentFile(`${path.slice(pathSeparatorIndex + 1)}`);
+          setCurrentFile(`${path.slice(pathSeparatorIndex + 2)}`); // 2 to take into account the double slash in the beginning
           setIsNewFileInputVisible(false);
           setIsNewDirectoryInputVisible(false);
           return v;
@@ -173,7 +173,7 @@ export const FileContentsContextProvider = ({
     ({
       path,
       setAsCurrent,
-      bustCache
+      bustCache,
     }: {
       path: NodeProps["path"];
       setAsCurrent?: boolean;

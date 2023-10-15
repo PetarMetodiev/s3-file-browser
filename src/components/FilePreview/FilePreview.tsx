@@ -11,7 +11,6 @@ export const FilePreview = ({ className }: FilePreviewProps) => {
   const {
     fileContents,
     isLoading,
-    currentDirectory,
     currentFile,
     isNewFileInputVisible,
     isNewDirectoryInputVisible,
@@ -21,9 +20,7 @@ export const FilePreview = ({ className }: FilePreviewProps) => {
   const showUploadContent = isNewFileInputVisible || isNewDirectoryInputVisible;
 
   useEffect(() => {
-    if (isLoading) {
-      setDisplayMessage("Loading...");
-    } else if (fileContents) {
+    if (fileContents) {
       setDisplayMessage(fileContents);
     } else {
       setDisplayMessage("Click on a file to see its content");
@@ -32,10 +29,7 @@ export const FilePreview = ({ className }: FilePreviewProps) => {
 
   return (
     <div className={`file-preview-inner ${className || ""}`}>
-      <div data-titlebar>{currentFile && `currentFile: ${currentFile}`}</div>
-      <div data-titlebar>
-        {currentDirectory && `selectedPath: ${currentDirectory}`}
-      </div>
+      <h2 data-titlebar>{currentFile}</h2>
       <div data-main-content>
         {/* TODO: Fix loading indicator*/}
         {!isLoading && showUploadContent && <UploadContent />}

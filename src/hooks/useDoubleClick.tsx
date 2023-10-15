@@ -4,8 +4,8 @@ export const useDoubleClick = <T,>({
   onClick,
   onDoubleClick,
 }: {
-  onDoubleClick: MouseEventHandler<T>;
-  onClick: MouseEventHandler<T>;
+  onDoubleClick?: MouseEventHandler<T>;
+  onClick?: MouseEventHandler<T>;
 }) => {
   const timeout = 200;
   const clickTimeout = useRef<ReturnType<typeof setTimeout>>();
@@ -26,7 +26,7 @@ export const useDoubleClick = <T,>({
         }, timeout);
       }
       if (event.detail % 2 === 0) {
-        onDoubleClick(event);
+        onDoubleClick?.(event);
       }
     },
     [onClick, onDoubleClick]

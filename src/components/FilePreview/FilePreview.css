@@ -1,6 +1,15 @@
 .file-preview-inner {
+  min-height: 100%;
+  padding: 1rem;
+
   display: grid;
   place-items: center;
   grid-template-rows: min-content 1fr;
   grid-template-columns: 1fr;
+  gap: 1rem;
+
+  & [data-main-content] {
+    overflow-y: auto;
+    max-height: 100%;
+  }
 }
