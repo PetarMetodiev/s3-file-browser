@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import { FileContentsContext } from "@src/contexts/FileContentsContextProvider";
 import { RawObj } from "../TreeView/TreeView";
@@ -21,6 +21,14 @@ export type NodeProps = {
   onDelete: () => void;
 };
 
+const flattenPath = (path: NodeProps["path"]) => {
+  const depthIndicatorIndex = path.indexOf(directoryLevelSeparator);
+  return path
+    .slice(depthIndicatorIndex + 1)
+    .split("/")
+    .filter(Boolean);
+};
+
 export const TreeNode = ({
   nodeName,
   path,
@@ -37,7 +45,6 @@ export const TreeNode = ({
     fetchDirectoryContents,
     deleteFile,
     currentDirectory,
-    // currentDirectory,
     // selectCurrentDirectory,
   } = useContext(FileContentsContext);
 
@@ -62,7 +69,6 @@ export const TreeNode = ({
     ({ setAsCurrent }: { setAsCurrent: boolean } = { setAsCurrent: false }) => {
       return fetchDirectoryContents({ path: pathBelow, setAsCurrent }).then(
         (r) => {
-          // setIsExpanded(true);
           setDirectoryContents(r);
           setIsEmpty(r.length === 0);
         }
@@ -70,6 +76,21 @@ export const TreeNode = ({
     },
     [fetchDirectoryContents, pathBelow]
   );
+
+  useEffect(() => {
+    const flatPathBelow = flattenPath(pathBelow);
+    const flatCurrentDirectory = flattenPath(currentDirectory).slice(
+      0,
+      flatPathBelow.length
+    );
+
+    if (
+      JSON.stringify(flatPathBelow) === JSON.stringify(flatCurrentDirectory) ||
+      currentDirectory === pathBelow
+    ) {
+      refreshDirectoryContents().then(() => setIsExpanded(true));
+    }
+  }, [currentDirectory, pathBelow, refreshDirectoryContents]);
 
   return (
     <li className="tree-node" data-tile={isTile}>
