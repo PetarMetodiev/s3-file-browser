@@ -177,6 +177,7 @@ export const FileContentsContextProvider = ({
     }) => {
       setIsLoading(true);
       if (currentDirectory === path) {
+        setIsLoading(false);
         return Promise.resolve(directoryContentsCache);
       }
       return getAllObjects({ prefix: path })
