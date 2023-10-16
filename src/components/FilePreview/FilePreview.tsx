@@ -6,6 +6,8 @@ import "css.gg/icons/css/file.css";
 
 import "./FilePreview.css";
 
+const defaultDisplayMessage = "Click on a file to see its content";
+
 type FilePreviewProps = {
   className?: string;
 };
@@ -19,16 +21,12 @@ export const FilePreview = ({ className }: FilePreviewProps) => {
     isNewDirectoryInputVisible,
   } = useContext(FileContentsContext);
 
-  const [displayMessage, setDisplayMessage] = useState(
-    "Click on a file to see its content"
-  );
+  const [displayMessage, setDisplayMessage] = useState(defaultDisplayMessage);
   const showUploadContentForm =
     isNewFileInputVisible || isNewDirectoryInputVisible;
 
   useEffect(() => {
-    if (fileContents) {
-      setDisplayMessage(fileContents);
-    }
+    setDisplayMessage(fileContents || defaultDisplayMessage);
   }, [fileContents]);
 
   return (
@@ -37,7 +35,7 @@ export const FilePreview = ({ className }: FilePreviewProps) => {
         {currentFile && (
           <>
             <i className="gg-file"></i>
-            currentFile
+            {currentFile}
           </>
         )}
       </h2>

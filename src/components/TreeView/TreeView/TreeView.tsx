@@ -24,6 +24,7 @@ export const TreeView = ({ className }: TreeViewProps) => {
     showNewFileInput,
     showNewDirectoryInput,
     isLoading,
+    // isNewDirectoryInputVisible,
   } = useContext(FileContentsContext);
   const { logout } = useContext(S3CredentialsContext);
   const [paths, setPaths] = useState<RawObj[] | undefined>();
@@ -46,6 +47,12 @@ export const TreeView = ({ className }: TreeViewProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // useEffect(() => {
+  //   if (isNewDirectoryInputVisible) {
+  //     refreshDirectoryContents();
+  //   }
+  // }, [isNewDirectoryInputVisible, refreshDirectoryContents]);
+  //
   return (
     <div className={`tree-view-inner ${className || ""}`}>
       <div data-tree-container>
@@ -62,7 +69,7 @@ export const TreeView = ({ className }: TreeViewProps) => {
                       nodeName={nodeName!}
                       isDirectory={p.isDir}
                       path={p.key!}
-                      onDelete={refreshDirectoryContents}
+                      // onDelete={refreshDirectoryContents}
                     />
                   );
                 })}
