@@ -18,7 +18,7 @@ export type NodeProps = {
   path: `${number}${typeof directoryLevelSeparator}/${string}`;
   isDirectory: boolean;
   isTile?: boolean;
-  onDelete: () => void;
+  onFileDelete?: ({ path }: { path: NodeProps["path"] }) => void;
 };
 
 const flattenPath = (path: NodeProps["path"]) => {
@@ -34,18 +34,14 @@ export const TreeNode = ({
   path,
   isDirectory,
   isTile = false,
-  onDelete,
+  onFileDelete,
 }: NodeProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   const [directoryContents, setDirectoryContents] = useState<RawObj[]>([]);
 
-  const {
-    fetchFileContents,
-    fetchDirectoryContents,
-    deleteFile,
-    currentDirectory,
-  } = useContext(FileContentsContext);
+  const { fetchFileContents, fetchDirectoryContents, currentDirectory } =
+    useContext(FileContentsContext);
 
   const handleClick = useDoubleClick({
     onClick: () => {
@@ -120,12 +116,12 @@ export const TreeNode = ({
               fetchFileContents({ path });
             }}
           >
-            <i className="gg-file-document"></i> {nodeName}{" "}
+            <i className="gg-file-document"></i> {nodeName}
           </button>
           <button
             data-deleter
             onClick={() => {
-              deleteFile({ path }).then(onDelete);
+              onFileDelete?.({ path });
             }}
           >
             <i className="gg-trash"></i>
@@ -144,7 +140,6 @@ export const TreeNode = ({
                   nodeName={nodeName!}
                   isDirectory={dc.isDir}
                   path={dc.key!}
-                  onDelete={() => refreshDirectoryContents()}
                 />
               );
             })}

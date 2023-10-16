@@ -15,6 +15,7 @@ export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
 
   const {
     fetchDirectoryContents,
+    deleteFile,
     currentDirectory,
     showNewFileInput,
     showNewDirectoryInput,
@@ -71,7 +72,14 @@ export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
                   isDirectory={p.isDir}
                   path={p.key!}
                   isTile={true}
-                  onDelete={refreshDirectoryContents}
+                  onFileDelete={(ev) => {
+                    deleteFile({ path: ev.path }).then(() =>
+                      refreshDirectoryContents({
+                        setAsCurrent: true,
+                        bustCache: true,
+                      })
+                    );
+                  }}
                 />
               );
             })}

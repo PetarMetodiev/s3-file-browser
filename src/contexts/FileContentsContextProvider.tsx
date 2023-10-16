@@ -151,6 +151,7 @@ export const FileContentsContextProvider = ({
   const fetchFileContents = useCallback(
     ({ path }: { path: NodeProps["path"] }) => {
       setIsLoading(true);
+      setFileContents("");
       return getObject({ key: path })
         .then((r) => r.Body?.transformToString())
         .then((v) => {
@@ -222,10 +223,13 @@ export const FileContentsContextProvider = ({
       fileName: string;
       content: string;
     }) => {
+      setFileContents("");
+      setIsLoading(true);
       return putObject({ key: `${path}/${fileName}`, content })
         .then(() => {
           setIsNewFileInputVisible(false);
           setIsNewDirectoryInputVisible(false);
+          setIsLoading(false);
           setNetworkError(defaultContext.networkError);
           setDirectoryContentsCache([]);
           onCloseInputCallback();
@@ -244,10 +248,13 @@ export const FileContentsContextProvider = ({
       directoryName: string;
     }) => {
       const key = `${path}/${directoryName}`;
+      setFileContents("");
+      setIsLoading(true);
       return putObject({ key, content: "" })
         .then(() => {
           setIsNewFileInputVisible(false);
           setIsNewDirectoryInputVisible(false);
+          setIsLoading(false);
           setNetworkError(defaultContext.networkError);
           setDirectoryContentsCache([]);
           onCloseInputCallback();
@@ -260,6 +267,7 @@ export const FileContentsContextProvider = ({
   const deleteDirectory = useCallback(
     ({ paths }: { paths: NodeProps["path"][] }) => {
       setIsLoading(true);
+      setFileContents("");
       return deleteAllObjects({ keys: paths })
         .then((r) => {
           setIsLoading(false);
@@ -275,6 +283,7 @@ export const FileContentsContextProvider = ({
   const deleteFile = useCallback(
     ({ path }: { path: NodeProps["path"] }) => {
       setIsLoading(true);
+      setFileContents("");
       return deleteObject({ key: path })
         .then((r) => {
           setIsLoading(false);
