@@ -6,7 +6,7 @@ import "css.gg/icons/css/file.css";
 
 import "./FilePreview.css";
 
-const defaultDisplayMessage = "Click on a file to see its content";
+const defaultDisplayMessage = "Double click on a file/directory to see its content";
 
 type FilePreviewProps = {
   className?: string;

@@ -47,6 +47,7 @@ export const TreeView = ({ className }: TreeViewProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // adding new dirs to the root should refresh the tree
   // useEffect(() => {
   //   if (isNewDirectoryInputVisible) {
   //     refreshDirectoryContents();

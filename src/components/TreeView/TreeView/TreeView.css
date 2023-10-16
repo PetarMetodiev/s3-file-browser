@@ -3,10 +3,12 @@
   overflow: auto;
   min-height: 100%;
   display: flex;
+  gap: 1rem;
   flex-direction: column;
   justify-content: space-between;
 
   & [data-tree-container] {
+    overflow: auto;
     & > * + * {
       margin-top: 2rem;
     }
