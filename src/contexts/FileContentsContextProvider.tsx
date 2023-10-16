@@ -148,6 +148,7 @@ export const FileContentsContextProvider = ({
   );
 
   // add support for abort controller
+  // https://github.com/aws/aws-sdk-js-v3/blob/main/README.md#abort-controller
   const fetchFileContents = useCallback(
     ({ path }: { path: NodeProps["path"] }) => {
       setIsLoading(true);
