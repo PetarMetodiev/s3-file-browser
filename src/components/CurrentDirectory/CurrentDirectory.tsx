@@ -110,8 +110,6 @@ export const CurrentDirectory = ({ className }: CurrentDirectoryProps) => {
                 }),
             })
           }
-          onDelete={() => console.log("on delete")}
-          showDelete={true}
         />
       </div>
     </div>
