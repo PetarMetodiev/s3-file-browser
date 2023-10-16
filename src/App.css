@@ -1,7 +1,10 @@
 .main-wrapper {
   height: 100%;
-  display: grid;
 
+  & .form-container {
+    display: grid;
+    min-height:100%;
+  }
   & .form-wrapper {
     margin: auto;
   }

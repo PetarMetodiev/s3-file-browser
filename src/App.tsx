@@ -10,7 +10,8 @@ import { FileContentsContextProvider } from "./contexts/FileContentsContextProvi
 import { FileExplorer } from "./components/FileExplorer/FileExplorer";
 
 function App() {
-  const { updateCredentials, isAuthenticated } = useContext(S3CredentialsContext);
+  const { updateCredentials, isAuthenticated } =
+    useContext(S3CredentialsContext);
 
   const submitCredentials = (credentials: S3Credentials) => {
     updateCredentials(credentials);
@@ -23,10 +24,12 @@ function App() {
           <FileExplorer />
         </FileContentsContextProvider>
       ) : (
-        <CredentialsForm
-          className="form-wrapper"
-          onSubmit={(e) => submitCredentials(e)}
-        />
+        <div className="form-container">
+          <CredentialsForm
+            className="form-wrapper"
+            onSubmit={(e) => submitCredentials(e)}
+          />
+        </div>
       )}
     </main>
   );
