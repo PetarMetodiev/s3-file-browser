@@ -46,7 +46,7 @@ export const CredentialsForm = ({
         onChange={setSecretAccessKey}
         required
       />
-      <Button className="credentials-form__button">Submit</Button>
+      <Button className="credentials-form__button">Open file browser</Button>
     </form>
   );
 };
